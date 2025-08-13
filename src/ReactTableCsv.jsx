@@ -111,7 +111,7 @@ const FilterDropdown = ({ column, values, selectedValues, onSelectionChange, onC
 
 const SETTINGS_VERSION = '0.1';
 
-const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', storageKey = 'react-table-csv-key', defaultSettings = '' }) => {
+const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', storageKey = 'react-table-csv-key', defaultSettings = '', theme = 'lite' }) => {
   // Parse CSV using PapaParse for robust handling (quotes, commas, BOM)
   const parseCSV = (csv) => {
     const result = Papa.parse(csv, {
@@ -1000,7 +1000,7 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
   const isCustomize = customize;
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} ${theme === 'dark' ? styles.dark : styles.lite}`}>
       <div className={styles.container}>
         <div className={styles.card}>
           {/* <div className={styles.header}>

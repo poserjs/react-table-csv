@@ -13,7 +13,7 @@ A React component for exploring CSV data with a rich, spreadsheet‑like UI. It 
 - Split tables by selected columns (one table per unique combination) with filters rendered on the first split table.
 - Row numbers (resets per table) and stable internal row IDs for React keys.
 - Settings: export/import JSON, autosave to `localStorage`, Copy URL with embedded `defaultSetting` query param.
-- Clean light theme using local CSS Modules (no Tailwind dependency).
+- Light and dark themes using local CSS Modules (no Tailwind dependency).
 
 ## Repository Layout
 - `src/` – component source
@@ -47,6 +47,7 @@ export default function Page() {
         downloadFilename="data.csv"
         storageKey="react-table-csv-key"
         defaultSettings=""
+        theme="dark"
       />
     </main>
   );
@@ -58,6 +59,7 @@ export default function Page() {
 - `downloadFilename?: string` Filename for exports. Default `"data.csv"`.
 - `storageKey?: string` localStorage key for settings. Default `"react-table-csv-key"`.
 - `defaultSettings?: string` JSON string (same schema as exported) used as defaults and fallback if localStorage is missing/corrupt.
+- `theme?: 'lite' | 'dark'` Visual theme for the component. Default `"lite"`.
 
 ## Exported/Imported Settings (high‑level)
 - `{ version, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize }`
