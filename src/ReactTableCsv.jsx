@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import Papa from 'papaparse';
-import { ChevronUp, ChevronDown, Filter, X, Palette, Type, AlignLeft, AlignCenter, AlignRight, Columns, Check, Search, List, WrapText, Eye, EyeOff, GripVertical, Paintbrush, Pin, PinOff, Download, Scissors, Hash, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
+import { ChevronUp, ChevronDown, Filter, X, Type, AlignLeft, AlignCenter, AlignRight, Columns, Search, List, WrapText, Eye, EyeOff, GripVertical, Paintbrush, Pin, PinOff, Download, Scissors, Hash, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
 import styles from './ReactTableCsv.module.css';
 
 // Sample CSV data for demonstration
@@ -23,7 +23,7 @@ Daniel Thompson,Sales,Business Development,88000,2020-06-15,4.0
 `;
 
 // Dropdown component for multi-select filtering
-const FilterDropdown = ({ column, values, selectedValues, onSelectionChange, onClose }) => {
+const FilterDropdown = ({ values, selectedValues, onSelectionChange, onClose }) => {
   const dropdownRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -154,7 +154,7 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
   const { headers: originalHeaders, data: initialData } = useMemo(() => parseCSV(csvString), [csvString]);
   
   // State management
-  const [data, setData] = useState(initialData);
+  const [data] = useState(initialData);
   // Per-column sorting is configured via columnStyles[col].sort:
   // 'none' | 'up' | 'down' | 'up numbers' | 'down numbers'
   const [filters, setFilters] = useState({});
@@ -174,7 +174,6 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
   const headerRefs = useRef({});
   const rowNumHeaderRef = useRef(null);
   const [showRowNumbers, setShowRowNumbers] = useState(false);
-  const [settingsJSON, setSettingsJSON] = useState('');
   const [customize, setCustomize] = useState(false);
   const defaultSettingsObj = useMemo(() => {
     try {
@@ -769,8 +768,6 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
     }
   };
 
-  const hasActiveFilters = Object.keys(filters).some(key => filters[key]) || 
-                          Object.keys(dropdownFilters).some(key => dropdownFilters[key]?.size > 0);
 
   // Compute sticky left offsets for pinned columns based on header widths
   // Use layout effect to avoid 1-frame visual gaps when toggling row numbers
@@ -882,7 +879,6 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
       const s = buildSettings();
       const json = JSON.stringify(s);
       window.localStorage.setItem(storageKey, json);
-      setSettingsJSON(json);
     } catch (e) {
       // ignore
     }
@@ -891,11 +887,10 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
   const handleExportSettings = () => {
     try {
       const json = JSON.stringify(buildSettings());
-      setSettingsJSON(json);
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(json).catch(() => {});
+        navigator.clipboard.writeText(json).catch(() => { /* ignore clipboard error */ });
       }
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
   };
 
   const handleImportSettings = () => {
@@ -906,7 +901,6 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
       applySettings(parsed);
       // save right away
       window.localStorage.setItem(storageKey, JSON.stringify(parsed));
-      setSettingsJSON(JSON.stringify(parsed));
     } catch (e) {
       alert('Invalid JSON. Settings not applied.');
     }
@@ -917,7 +911,7 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
       applySettings(defaultSettingsObj);
       try {
         window.localStorage.setItem(storageKey, JSON.stringify(defaultSettingsObj));
-      } catch {}
+      } catch { /* ignore */ }
     } else {
       // fall back to clearing all to baseline defaults
       setColumnStyles({});
@@ -929,7 +923,7 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
       setShowFilterRow(false);
       setPinnedAnchor(null);
       setShowRowNumbers(false);
-      try { window.localStorage.removeItem(storageKey); } catch {}
+      try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ }
     }
   };
 
@@ -991,9 +985,9 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
       url.searchParams.set('defaultSetting', json);
       const str = url.toString();
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(str).catch(() => {});
+        navigator.clipboard.writeText(str).catch(() => { /* ignore clipboard error */ });
       }
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
   };
 
   // Computed editable flag used across UI
@@ -1573,7 +1567,6 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
                                 
                                 {activeDropdown === header && (
                                   <FilterDropdown
-                                    column={header}
                                     values={uniqueValues[header]}
                                     selectedValues={dropdownFilters[header] || new Set()}
                                     onSelectionChange={(newSelection) => {
@@ -1821,7 +1814,6 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
 
                                       {activeDropdown === header && (
                                         <FilterDropdown
-                                          column={header}
                                           values={uniqueValues[header]}
                                           selectedValues={dropdownFilters[header] || new Set()}
                                           onSelectionChange={(newSelection) => {
