@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import ReactTableCSV from "../../src/ReactTableCsv";
+import ReactTableCSV from "../../src/ReactTableCsv.jsx";
+// const ReactTableCSV = dynamic(import("../../src/ReactTableCsv.jsx"));
 
   // Sample CSV data for demonstration
 const sampleCSV = `Name,Department,Position,Salary,Start Date,Performance Rating

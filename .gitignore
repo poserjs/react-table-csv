@@ -22,3 +22,9 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+
+# npm module
+node_modules
+dist
+coverage
+.DS_Store
