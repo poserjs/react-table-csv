@@ -15,21 +15,7 @@ A React component for exploring CSV data with a rich, spreadsheet‑like UI. It 
 - Settings: export/import JSON, autosave to `localStorage`, Copy URL with embedded `defaultSetting` query param.
 - Light and dark themes using local CSS Modules (no Tailwind dependency).
 
-## Repository Layout
-- `src/` – component source
-  - `src/ReactTableCsv.jsx`
-  - `src/ReactTableCsv.module.css`
-- `demo/` – Next.js demo app (App Router)
-  - scripts: `dev`, `build`, `start`, `lint`
-
-## Quickstart (Demo App)
-1) `cd demo && npm install`
-2) Run dev server: `npm run dev` (http://localhost:3000)
-3) Build/serve prod: `npm run build && npm start`
-4) Lint demo: `npm run lint`
-
 ## Using the Component in Your App
-Install peer deps in your app: `npm i papaparse lucide-react`
 
 ### Usage (Next.js App Router example)
 ```jsx
@@ -64,11 +50,8 @@ export default function Page() {
 ## Exported/Imported Settings (high‑level)
 - `{ version, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize }`
 
-## Build/Lint the Component Source (optional)
-- The component is plain JSX/CSS — no separate build is required.
-- Lint `src/` (if ESLint is available):
-  - From repo root: `npx eslint "src/**/*.{js,jsx}" --max-warnings=0`
-  - Or extend the demo’s ESLint config to include `../src` and run `npm run lint` from `demo/`.
+## Development
+See the [CONTRIBUTING.md](./CONTRIBUTING.md) file for details.
 
 ## License
 Licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.

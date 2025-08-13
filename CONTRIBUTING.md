@@ -178,4 +178,3 @@ When filing an issue, include:
   - A: `npm publish` will run `prepare`, which builds `dist/` automatically.
 
 Thanks again for contributing! 🎉
-
