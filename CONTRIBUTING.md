@@ -15,9 +15,9 @@ By participating, you agree to uphold a respectful, inclusive environment. Be ki
   - `src/ReactTableCsv.module.css`
   - `src/index.js` (entry that re-exports the component)
 - `dist/` – transpiled output published to npm (generated)
-- `demo/` – Next.js demo (App Router)
+- `demo/` – VITE spa
   - `demo/app/**/*` pages and layout
-  - `demo/package.json` with scripts: `dev`, `build`, `start`, `lint`
+  - `demo/package.json` with scripts: `dev`, `build`, `lint`, `preview`
 - Root configs: `.babelrc.json`, `.eslintrc.json`, `package.json`
 
 ## Prerequisites
@@ -46,7 +46,7 @@ Optional:
 - Run the demo (recommended for iterative UI work):
   ```bash
   cd demo
-  npm run dev  # http://localhost:3000
+  npm run dev  # http://localhost:5173
   ```
   The demo imports the component directly from `src/` for rapid iteration.
 
