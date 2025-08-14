@@ -97,6 +97,11 @@ Use concise, imperative commit messages. Conventional Commits are encouraged:
   - Before/after behavior and screenshots or attached CSV when UI/format changes
   - Notes on performance impact for large tables
 - Ensure `npm run lint` and (if added) tests pass.
+- Copy the contents of the src subdirectory into the demo app and verify the component is working in the app
+  - `cp -p src/*.js src/*.jsx src/*.css demo/src`
+  - `cd demo && npm run dev`
+  - check no errors are reported by the nextjs platform
+  - check no errors are reported on the web page (http://localhost:3000)
 
 ---
 
