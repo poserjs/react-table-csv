@@ -103,22 +103,6 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       transform: (v) => (typeof v === 'string' ? v.trim() : v),
     });
 
-    // const headers = result.meta?.fields || [];
-    // const data = (result.data || []).map((row) => {
-    //   const obj = {};
-    //   headers.forEach((h) => {
-    //     obj[h] = row[h] !== undefined && row[h] !== null ? row[h] : '';
-    //   });
-    //   return obj;
-    // });
-    // const result = Papa.parse(csv, {
-    //   header: true,
-    //   skipEmptyLines: true,
-    //   dynamicTyping: true,
-    //   transformHeader: (h) => (h || '').trim(),
-    //   transform: (v) => (typeof v === 'string' ? v.trim() : v),
-    // });
-
     const headers = result.meta?.fields || [];
     const data = (result.data || []).map((row, idx) => {
       const obj = {};
@@ -128,7 +112,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       // assign stable internal id starting from 1
       obj._id = idx + 1;
       return obj;
-    })
+    });
     return { headers, data };
   };
 
