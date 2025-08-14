@@ -1,5 +1,5 @@
 {
-  "name": "react-table-csv",
+  "name": "@poserjs/react-table-csv",
   "version": "0.1.1",
   "description": "A single-file React component for exploring CSV data with filers, grouping, sorting, and CSV export/import.",
   "license": "MIT",
@@ -36,6 +36,9 @@
   ],
   "engines": {
     "node": ">=16"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "peerDependencies": {
     "react": ">=18",

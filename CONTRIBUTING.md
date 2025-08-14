@@ -1,6 +1,6 @@
 # Contributing to react-table-csv
 
-Thanks for your interest in contributing! This repo contains a small, framework‑agnostic React component in `src/` and a Next.js demo app in `demo/` used for local development and showcasing. The package is published to npm as `react-table-csv`.
+Thanks for your interest in contributing! This repo contains a small, framework‑agnostic React component in `src/` and a Next.js demo app in `demo/` used for local development and showcasing. The package is published to npm as `@poserjs/react-table-csv`.
 
 Please read this guide before opening an issue or pull request.
 
