@@ -35,6 +35,74 @@
   --filter-bg: #374151;
 }
 
+.solarized {
+  --bg: #002b36;
+  --surface: #073642;
+  --surface-alt: #002b36;
+  --row-hover: #586e75;
+  --text: #fdf6e3;
+  --muted: #839496;
+  --border: #073642;
+  --primary: #268bd2;
+  --accent: #d33682;
+  --danger: #dc322f;
+  --thead: #073642;
+  --control-bg: #073642;
+  --btn-text: #fdf6e3;
+  --filter-bg: #073642;
+}
+
+.dracula {
+  --bg: #282a36;
+  --surface: #44475a;
+  --surface-alt: #383a59;
+  --row-hover: #6272a4;
+  --text: #f8f8f2;
+  --muted: #6272a4;
+  --border: #44475a;
+  --primary: #bd93f9;
+  --accent: #ff79c6;
+  --danger: #ff5555;
+  --thead: #21222c;
+  --control-bg: #44475a;
+  --btn-text: #f8f8f2;
+  --filter-bg: #44475a;
+}
+
+.monokai {
+  --bg: #272822;
+  --surface: #3e3d32;
+  --surface-alt: #2e2d2a;
+  --row-hover: #49483e;
+  --text: #f8f8f2;
+  --muted: #75715e;
+  --border: #3e3d32;
+  --primary: #a6e22e;
+  --accent: #66d9ef;
+  --danger: #f92672;
+  --thead: #49483e;
+  --control-bg: #3e3d32;
+  --btn-text: #f8f8f2;
+  --filter-bg: #3e3d32;
+}
+
+.gruvbox {
+  --bg: #282828;
+  --surface: #3c3836;
+  --surface-alt: #32302f;
+  --row-hover: #504945;
+  --text: #ebdbb2;
+  --muted: #a89984;
+  --border: #3c3836;
+  --primary: #d79921;
+  --accent: #d3869b;
+  --danger: #cc241d;
+  --thead: #3c3836;
+  --control-bg: #3c3836;
+  --btn-text: #ebdbb2;
+  --filter-bg: #3c3836;
+}
+
 .root {
   min-height: 100vh;
   padding: 4px;
