@@ -170,16 +170,12 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
         } else {
           setError('One of csvString, csvData, or csvURL must be provided.');
         }
-      } catch (e) {
+      } catch {
         setError('Failed to load CSV data.');
       }
     };
     loadData();
   }, [csvString, csvData, csvURL]);
-
-  if (error) {
-    return <div>{error}</div>;
-  }
 
   // State management
   // Per-column sorting is configured via columnStyles[col].sort:
@@ -383,7 +379,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       
       return passesTextFilters && passesDropdownFilters;
     });
-  }, [data, filters, dropdownFilters]);
+  }, [data, filters, dropdownFilters, columnStyles]);
 
   const groupByColumns = useMemo(() => {
     return originalHeaders.filter(h => columnStyles[h]?.groupBy);
@@ -883,7 +879,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       if (typeof s.customize === 'boolean') setCustomize(s.customize);
       // backward-compat: older settings may use `editable`
       if (typeof s.editable === 'boolean' && typeof s.customize !== 'boolean') setCustomize(s.editable);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, [originalHeaders]);
@@ -900,7 +896,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       } else if (defaultSettingsObj) {
         applySettings(defaultSettingsObj);
       }
-    } catch (e) {
+    } catch {
       if (defaultSettingsObj) {
         applySettings(defaultSettingsObj);
       }
@@ -916,7 +912,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       const s = buildSettings();
       const json = JSON.stringify(s);
       window.localStorage.setItem(storageKey, json);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, [
@@ -941,7 +937,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(json).catch(() => { /* ignore clipboard error */ });
       }
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
   };
 
   const handleImportSettings = () => {
@@ -952,7 +948,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       applySettings(parsed);
       // save right away
       window.localStorage.setItem(storageKey, JSON.stringify(parsed));
-    } catch (e) {
+    } catch {
       alert('Invalid JSON. Settings not applied.');
     }
   };
@@ -1052,11 +1048,15 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(str).catch(() => { /* ignore clipboard error */ });
       }
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
   };
 
   // Computed editable flag used across UI
   const isCustomize = customize;
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className={`${styles.root} ${theme === 'dark' ? styles.dark : styles.lite}`}>
