@@ -4,7 +4,10 @@
 React Table CSV is a React component for viewing and manipulating CSV data in-browser. It offers filtering, sorting, grouping, column management, styling, and export utilities to explore structured datasets without a backend.
 
 ## Props
-- **csvString** (`string`): CSV content to render. Defaults to an embedded sample dataset.
+- **csvString** (`string`, optional): CSV content to render.
+- **csvURL** (`string`, optional): URL to fetch CSV data from.
+- **csvData** (`object`, optional): Result of PapaParse (`{ data, meta: { fields } }`) to use directly.
+  One of `csvString`, `csvURL`, or `csvData` must be supplied.
 - **downloadFilename** (`string`): Suggested filename for exported CSV downloads.
 - **storageKey** (`string`): `localStorage` key used for persisting user settings.
 - **defaultSettings** (`string`): Optional JSON string with initial settings to apply on load.
