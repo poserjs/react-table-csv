@@ -56,12 +56,27 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.35.0",
-    "rimraf": "^5.0.0"
+    "rimraf": "^5.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/user-event": "^14.5.2",
+    "jest": "^29.7.0",
+    "babel-jest": "^29.7.0",
+    "identity-obj-proxy": "^3.0.0"
   },
   "scripts": {
     "build": "rimraf dist && babel src --extensions .js,.jsx,.ts,.tsx --out-dir dist --copy-files",
     "prepare": "npm run build",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
-    "test": "echo 'No tests yet'"
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.[tj]sx?$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "\\.(css|less|sass|scss)$": "identity-obj-proxy"
+    }
   }
 }
