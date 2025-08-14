@@ -1107,7 +1107,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
   }
 
   return (
-    <div className={`${styles.root} ${theme === 'dark' ? styles.dark : styles.lite}`}>
+    <div className={`${styles.root} ${styles[theme] || styles.lite}`}>
       <div className={styles.container}>
         <div className={styles.card}>
           {/* <div className={styles.header}>
