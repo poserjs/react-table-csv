@@ -42,7 +42,10 @@ const sampleSettings = '{"version":"0.1","columnStyles":{"Department":{"splitBy"
 export default function Page() {
   return (
     <main className="p-1">
-      <ReactTableCSV csvString={sampleCSV} defaultSettings={sampleSettings} />
+      {
+        // @ts-expect-error - demo intentionally passes only csvString/defaultSettings
+        <ReactTableCSV csvString={sampleCSV} defaultSettings={sampleSettings} />
+      }
     </main>
   );
 }

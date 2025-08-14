@@ -840,6 +840,8 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
   }, [visibleHeaders, pinnedIndex, showRowNumbers]);
 
   // Settings (export/import + autosave to localStorage)
+  // Avoid overwriting stored settings with initial empty state during first mount.
+  const settingsRestoredRef = useRef(false);
   const buildSettings = useCallback(() => {
     const dropdown = {};
     Object.entries(dropdownFilters).forEach(([k, v]) => {
@@ -886,8 +888,10 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     }
   }, [originalHeaders]);
 
+  // Restore settings only after headers are known, and only once
   useEffect(() => {
-    // load settings from localStorage on mount or when storage key changes
+    if (settingsRestoredRef.current) return;
+    if (!originalHeaders || originalHeaders.length === 0) return;
     try {
       const raw = window.localStorage.getItem(storageKey);
       if (raw) {
@@ -897,15 +901,17 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
         applySettings(defaultSettingsObj);
       }
     } catch (e) {
-      // invalid or corrupt value: apply defaults if provided
       if (defaultSettingsObj) {
         applySettings(defaultSettingsObj);
       }
+    } finally {
+      settingsRestoredRef.current = true;
     }
-  }, [storageKey, applySettings, defaultSettingsObj]);
+  }, [originalHeaders, storageKey, applySettings, defaultSettingsObj]);
 
   useEffect(() => {
-    // autosave as soon as possible on changes
+    // autosave as soon as possible on changes (after initial restore)
+    if (!settingsRestoredRef.current) return;
     try {
       const s = buildSettings();
       const json = JSON.stringify(s);
@@ -913,7 +919,21 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     } catch (e) {
       // ignore
     }
-  }, [buildSettings, storageKey]);
+  }, [
+    // track all settings inputs explicitly to guarantee save triggers
+    columnStyles,
+    columnOrder,
+    hiddenColumns,
+    filters,
+    dropdownFilters,
+    filterMode,
+    showFilterRow,
+    pinnedAnchor,
+    showRowNumbers,
+    customize,
+    storageKey,
+    buildSettings,
+  ]);
 
   const handleExportSettings = () => {
     try {
