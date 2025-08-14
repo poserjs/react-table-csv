@@ -21,7 +21,7 @@ A React component for exploring CSV data with a rich, spreadsheet‑like UI. It 
 ```jsx
 "use client";
 import React from "react";
-import ReactTableCSV from "../src/ReactTableCsv"; // or copy into your app
+import { ReactTableCSV } from "@poserjs/react-table-csv";
 
 const csv = `Name,Department,Salary\nAlice,Engineering,120000\nBob,Sales,90000`;
 
