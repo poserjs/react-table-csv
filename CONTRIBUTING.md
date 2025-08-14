@@ -61,6 +61,11 @@ Optional:
   ```bash
   npm run lint
   ```
+- Lint the demo app:
+  ```bash
+  cd demo
+  npm run lint
+  ```
 
 ## Testing
 This repository currently ships with a placeholder test script. We recommend Jest + React Testing Library for unit tests around:
