@@ -759,7 +759,12 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
 
   // Clear filters -> reset to defaults if provided, otherwise blank
   const clearAllFilters = () => {
-    if (defaultSettingsObj && (defaultSettingsObj.filters || defaultSettingsObj.dropdownFilters || defaultSettingsObj.filterMode != null)) {
+    if (
+      defaultSettingsObj &&
+      (defaultSettingsObj.filters ||
+        defaultSettingsObj.dropdownFilters ||
+        defaultSettingsObj.filterMode != null)
+    ) {
       const ds = defaultSettingsObj;
       setFilters(ds.filters || {});
       if (ds.dropdownFilters && typeof ds.dropdownFilters === 'object') {
@@ -771,11 +776,21 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       } else {
         setDropdownFilters({});
       }
-      if (ds.filterMode) setFilterMode(ds.filterMode);
-      if (typeof ds.showFilterRow === 'boolean') setShowFilterRow(ds.showFilterRow);
+      if (ds.filterMode) {
+        setFilterMode(ds.filterMode);
+      } else {
+        setFilterMode({});
+      }
+      if (typeof ds.showFilterRow === 'boolean') {
+        setShowFilterRow(ds.showFilterRow);
+      } else {
+        setShowFilterRow(false);
+      }
     } else {
       setFilters({});
       setDropdownFilters({});
+      setFilterMode({});
+      setShowFilterRow(false);
     }
   };
 
