@@ -38,10 +38,20 @@ export default function Page() {
     </main>
   );
 }
+
+// Load from a remote file
+// <ReactTableCSV csvURL="/path/to/data.csv" />
+
+// Or pass pre-parsed PapaParse output
+// const parsed = Papa.parse(csvText, { header: true });
+// <ReactTableCSV csvData={parsed} />
 ```
 
 ## Props
-- `csvString: string` CSV text to render. Required.
+- `csvString?: string` CSV text to render.
+- `csvURL?: string` URL to fetch CSV data from.
+- `csvData?: object` Result of `Papa.parse` (`{ data, meta: { fields } }`) to use directly.
+  One of `csvString`, `csvURL`, or `csvData` must be provided.
 - `downloadFilename?: string` Filename for exports. Default `"data.csv"`.
 - `storageKey?: string` localStorage key for settings. Default `"react-table-csv-key"`.
 - `defaultSettings?: string` JSON string (same schema as exported) used as defaults and fallback if localStorage is missing/corrupt.

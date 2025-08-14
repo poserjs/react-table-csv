@@ -3,25 +3,6 @@ import Papa from 'papaparse';
 import { ChevronUp, ChevronDown, Filter, X, Type, AlignLeft, AlignCenter, AlignRight, Columns, Search, List, WrapText, Eye, EyeOff, GripVertical, Paintbrush, Pin, PinOff, Download, Scissors, Hash, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
 import styles from './ReactTableCsv.module.css';
 
-// Sample CSV data for demonstration
-const sampleCSV = `Name,Department,Position,Salary,Start Date,Performance Rating
-John Smith,Engineering,Senior Developer,120000,2020-03-15,4.5
-Sarah Johnson,Marketing,Marketing Manager,95000,2019-07-22,4.2
-Michael Chen,Engineering,Tech Lead,135000,2018-11-01,4.8
-Emily Davis,HR,HR Director,110000,2017-05-10,4.6
-David Wilson,Sales,Sales Representative,75000,2021-01-18,3.9
-Lisa Anderson,Finance,Financial Analyst,85000,2020-09-05,4.1
-Robert Martinez,Engineering,Junior Developer,70000,2022-02-14,3.7
-Jennifer Taylor,Marketing,Content Specialist,65000,2021-06-30,4.0
-William Brown,Operations,Operations Manager,105000,2019-03-25,4.4
-Amanda White,Sales,Sales Manager,115000,2018-08-12,4.7
-Kevin Lee,Engineering,DevOps Engineer,105000,2020-12-08,4.3
-Nancy Garcia,HR,Recruiter,70000,2021-04-15,3.8
-Christopher Miller,Finance,Senior Accountant,90000,2019-10-20,4.2
-Jessica Rodriguez,Marketing,Social Media Manager,72000,2021-08-03,4.1
-Daniel Thompson,Sales,Business Development,88000,2020-06-15,4.0
-`;
-
 // Dropdown component for multi-select filtering
 const FilterDropdown = ({ values, selectedValues, onSelectionChange, onClose }) => {
   const dropdownRef = useRef(null);
@@ -111,7 +92,7 @@ const FilterDropdown = ({ values, selectedValues, onSelectionChange, onClose }) 
 
 const SETTINGS_VERSION = '0.1';
 
-const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', storageKey = 'react-table-csv-key', defaultSettings = '', theme = 'lite' }) => {
+const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.csv', storageKey = 'react-table-csv-key', defaultSettings = '', theme = 'lite' }) => {
   // Parse CSV using PapaParse for robust handling (quotes, commas, BOM)
   const parseCSV = (csv) => {
     const result = Papa.parse(csv, {
@@ -151,10 +132,56 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
     return { headers, data };
   };
 
-  const { headers: originalHeaders, data: initialData } = useMemo(() => parseCSV(csvString), [csvString]);
-  
+  const normalizeParsed = (parsed) => {
+    const headers = parsed?.meta?.fields || parsed?.headers || [];
+    const rows = parsed?.data || [];
+    const data = rows.map((row, idx) => {
+      const obj = {};
+      headers.forEach((h) => {
+        obj[h] = row[h] !== undefined && row[h] !== null ? row[h] : '';
+      });
+      obj._id = idx + 1;
+      return obj;
+    });
+    return { headers, data };
+  };
+
+  const [originalHeaders, setOriginalHeaders] = useState([]);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        if (csvString) {
+          const { headers, data } = parseCSV(csvString);
+          setOriginalHeaders(headers);
+          setData(data);
+        } else if (csvData) {
+          const { headers, data } = normalizeParsed(csvData);
+          setOriginalHeaders(headers);
+          setData(data);
+        } else if (csvURL) {
+          const res = await fetch(csvURL);
+          const text = await res.text();
+          const { headers, data } = parseCSV(text);
+          setOriginalHeaders(headers);
+          setData(data);
+        } else {
+          setError('One of csvString, csvData, or csvURL must be provided.');
+        }
+      } catch (e) {
+        setError('Failed to load CSV data.');
+      }
+    };
+    loadData();
+  }, [csvString, csvData, csvURL]);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   // State management
-  const [data] = useState(initialData);
   // Per-column sorting is configured via columnStyles[col].sort:
   // 'none' | 'up' | 'down' | 'up numbers' | 'down numbers'
   const [filters, setFilters] = useState({});
@@ -165,7 +192,7 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
   const [filterMode, setFilterMode] = useState({}); // 'text' or 'dropdown' for each column
   const [dropdownFilters, setDropdownFilters] = useState({}); // Set of selected values for dropdown filters
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [columnOrder, setColumnOrder] = useState(originalHeaders);
+  const [columnOrder, setColumnOrder] = useState([]);
   const [hiddenColumns, setHiddenColumns] = useState(new Set());
   const [draggedColumn, setDraggedColumn] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
@@ -207,11 +234,15 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
   };
 
   // Get unique values for each column
+  useEffect(() => {
+    setColumnOrder(originalHeaders);
+  }, [originalHeaders]);
+
   const uniqueValues = useMemo(() => {
     const result = {};
     originalHeaders.forEach(header => {
       const values = new Set();
-      initialData.forEach(row => {
+      data.forEach(row => {
         if (row[header] !== undefined && row[header] !== null && row[header] !== '') {
           values.add(row[header]);
         }
@@ -224,7 +255,7 @@ const ReactTableCSV = ({ csvString = sampleCSV, downloadFilename = 'data.csv', s
       });
     });
     return result;
-  }, [initialData, originalHeaders]);
+  }, [data, originalHeaders]);
 
   // Drag and drop handlers
   const handleDragStart = (e, header) => {
