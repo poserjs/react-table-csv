@@ -1,6 +1,6 @@
 {
   "name": "react-table-csv",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A single-file React component for exploring CSV data with filers, grouping, sorting, and CSV export/import.",
   "license": "MIT",
   "type": "module",
@@ -8,11 +8,22 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "exports": {
-    ".": { "import": "./dist/index.js" },
+    ".": {
+      "import": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   },
-  "sideEffects": ["**/*.css"],
-  "files": ["dist", "src", "README.md", "LICENSE", "LICENSE.md", "index.d.ts"],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE",
+    "LICENSE.md",
+    "index.d.ts"
+  ],
   "keywords": [
     "react",
     "csv",
@@ -23,7 +34,9 @@
     "sorting",
     "papaparse"
   ],
-  "engines": { "node": ">=16" },
+  "engines": {
+    "node": ">=16"
+  },
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18",
