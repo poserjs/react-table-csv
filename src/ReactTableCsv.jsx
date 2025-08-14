@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import Papa from 'papaparse';
-import { ChevronUp, ChevronDown, Filter, X, Type, AlignLeft, AlignCenter, AlignRight, Columns, Search, List, WrapText, Eye, EyeOff, GripVertical, Paintbrush, Pin, PinOff, Download, Copy, Scissors, Hash, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
+import { ChevronUp, ChevronDown, Filter, X, Type, AlignLeft, AlignCenter, AlignRight, Columns, Search, List, WrapText, Eye, EyeOff, GripVertical, Paintbrush, Pin, PinOff, Download, Copy, Scissors, Hash, RefreshCw, SunMoon, Settings as SettingsIcon } from 'lucide-react';
 import styles from './ReactTableCsv.module.css';
 
 // Dropdown component for multi-select filtering
@@ -91,6 +91,7 @@ const FilterDropdown = ({ values, selectedValues, onSelectionChange, onClose }) 
 };
 
 const SETTINGS_VERSION = '0.1';
+const THEMES = ['lite', 'dark', 'solarized', 'dracula', 'monokai', 'gruvbox'];
 
 const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.csv', storageKey = 'react-table-csv-key', defaultSettings = '', theme = 'lite' }) => {
   // Parse CSV using PapaParse for robust handling (quotes, commas, BOM)
@@ -133,6 +134,13 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
   const [originalHeaders, setOriginalHeaders] = useState([]);
   const [data, setData] = useState([]);
   const [error, setError] = useState('');
+  const [currentTheme, setCurrentTheme] = useState(theme);
+
+  const cycleTheme = () => {
+    const idx = THEMES.indexOf(currentTheme);
+    const next = THEMES[(idx + 1) % THEMES.length];
+    setCurrentTheme(next);
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -1091,7 +1099,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
   }
 
   return (
-    <div className={`${styles.root} ${styles[theme] || styles.lite}`}>
+    <div className={`${styles.root} ${styles[currentTheme] || styles.lite}`}>
       <div className={styles.container}>
         <div className={styles.card}>
           {/* <div className={styles.header}>
@@ -1181,6 +1189,10 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
                 <div className={styles.reducerGroup}>
                   <button className={styles.btn} onClick={handleExportSettings} title="Copy settings JSON to clipboard">Export settings</button>
                   <button className={styles.btn} onClick={handleImportSettings} title="Paste settings JSON to import">Import settings</button>
+                  <button className={styles.btn} onClick={cycleTheme} title="Cycle table theme">
+                    <SunMoon size={16} />
+                    Theme: {currentTheme}
+                  </button>
                 </div>
               </div>
 
