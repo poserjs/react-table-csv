@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import Papa from 'papaparse';
-import { ChevronUp, ChevronDown, Filter, X, Type, AlignLeft, AlignCenter, AlignRight, Columns, Search, List, WrapText, Eye, EyeOff, GripVertical, Paintbrush, Pin, PinOff, Download, Scissors, Hash, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
+import { ChevronUp, ChevronDown, Filter, X, Type, AlignLeft, AlignCenter, AlignRight, Columns, Search, List, WrapText, Eye, EyeOff, GripVertical, Paintbrush, Pin, PinOff, Download, Copy, Scissors, Hash, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
 import styles from './ReactTableCsv.module.css';
 
 // Dropdown component for multi-select filtering
@@ -978,8 +978,8 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     }
   };
 
-  const handleDownload = () => {
-    if (!visibleHeaders.length) return;
+  const buildCsv = () => {
+    if (!visibleHeaders.length) return null;
     const baseRows = groupByColumns.length > 0 ? groupedData : filteredData;
     // Apply multi-column sorting to export as well
     const sorts = visibleHeaders
@@ -1018,7 +1018,13 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       delimiter: ',',
       newline: '\r\n',
     });
-    const blob = new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8;' });
+    return '\ufeff' + csv;
+  };
+
+  const handleDownload = () => {
+    const csv = buildCsv();
+    if (!csv) return;
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -1027,6 +1033,14 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+  const handleCopyCsv = () => {
+    const csv = buildCsv();
+    if (!csv) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(csv).catch(() => { /* ignore clipboard error */ });
+    }
   };
 
   const handleCopyUrl = () => {
@@ -1088,6 +1102,11 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
                     </button>
                   </>
                 )}
+
+                <button onClick={handleCopyCsv} className={`${styles.btn} ${styles.btnSecondary}`} title="Copy current view as CSV">
+                  <Copy size={18} />
+                  Copy CSV
+                </button>
 
                 <button onClick={handleDownload} className={`${styles.btn} ${styles.btnSecondary}`} title="Download current view as CSV">
                   <Download size={18} />
