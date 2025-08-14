@@ -1017,6 +1017,46 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     return '\ufeff' + csv;
   };
 
+  const buildMarkdown = () => {
+    if (!visibleHeaders.length) return null;
+    const baseRows = groupByColumns.length > 0 ? groupedData : filteredData;
+    const sorts = visibleHeaders
+      .map(h => ({ col: h, mode: columnStyles[h]?.sort || 'none' }))
+      .filter(s => s.mode && s.mode !== 'none');
+    const rows = sorts.length ? [...baseRows].sort((a, b) => {
+      const toNum = (v) => {
+        if (typeof v === 'number') return v;
+        const n = parseFloat(v);
+        return isNaN(n) ? null : n;
+      };
+      for (const s of sorts) {
+        const numeric = s.mode.includes('numbers');
+        const asc = s.mode.startsWith('up');
+        let av = a[s.col];
+        let bv = b[s.col];
+        let r = 0;
+        if (numeric) {
+          const an = toNum(av), bn = toNum(bv);
+          if (an === null && bn === null) r = 0; else if (an === null) r = 1; else if (bn === null) r = -1; else r = an - bn;
+        } else {
+          if (av == null && bv == null) r = 0; else if (av == null) r = 1; else if (bv == null) r = -1; else r = String(av).localeCompare(String(bv));
+        }
+        if (r !== 0) return asc ? r : -r;
+      }
+      return 0;
+    }) : baseRows;
+    const header = `| ${visibleHeaders.join(' | ')} |`;
+    const separator = `| ${visibleHeaders.map(() => '---').join(' | ')} |`;
+    const body = rows.map(row => {
+      const cells = visibleHeaders.map(h => {
+        const v = row[h] == null ? '' : String(row[h]);
+        return v.replace(/\|/g, '\\|');
+      });
+      return `| ${cells.join(' | ')} |`;
+    });
+    return [header, separator, ...body].join('\n');
+  };
+
   const handleDownload = () => {
     const csv = buildCsv();
     if (!csv) return;
@@ -1036,6 +1076,14 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     if (!csv) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(csv).catch(() => { /* ignore clipboard error */ });
+    }
+  };
+
+  const handleCopyMarkdown = () => {
+    const md = buildMarkdown();
+    if (!md) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(md).catch(() => { /* ignore clipboard error */ });
     }
   };
 
@@ -1102,6 +1150,11 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
                     </button>
                   </>
                 )}
+
+                <button onClick={handleCopyMarkdown} className={`${styles.btn} ${styles.btnSecondary}`} title="Copy current view as Markdown">
+                  <Copy size={18} />
+                  Copy Markdown
+                </button>
 
                 <button onClick={handleCopyCsv} className={`${styles.btn} ${styles.btnSecondary}`} title="Copy current view as CSV">
                   <Copy size={18} />
