@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@poserjs/react-table-csv": "file:..",
     "lucide-react": "^0.539.0",
     "next": "15.4.6",
     "papaparse": "^5.5.3",
