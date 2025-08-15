@@ -8,17 +8,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Keep imports under node_modules (symlink) instead of realpath outside project
   resolve: {
-    preserveSymlinks: true,
     dedupe: ['react', 'react-dom'],
     alias: {
+      // Use the library source directly for instant HMR
+      '@poserjs/react-table-csv': path.resolve(__dirname, '../src'),
       react: path.resolve(__dirname, 'node_modules/react'),
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     },
   },
   // Allow Vite dev server to access the workspace root when following symlinks
   server: {
+    watch: {
+      // Useful on some filesystems/editors where change events are missed
+      // usePolling: true,
+      // interval: 100,
+    },
     fs: {
       allow: ['..']
     }

@@ -13,7 +13,7 @@ A React component for exploring CSV data with a rich, spreadsheet‑like UI. It 
 - Split tables by selected columns (one table per unique combination) with filters rendered on the first split table.
 - Row numbers (resets per table) and stable internal row IDs for React keys.
 - Settings: export/import JSON, autosave to `localStorage`, Copy URL with embedded `defaultSetting` query param.
-- Light, dark, Solarized, Dracula, Monokai, and Gruvbox themes using local CSS Modules (no Tailwind dependency).
+- lite, dark, solarized, dracula, monokai, and gruvbox themes using local CSS Modules (no Tailwind dependency).
 
 ## Using the Component in Your App
 
