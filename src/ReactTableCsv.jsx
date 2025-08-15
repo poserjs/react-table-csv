@@ -101,7 +101,8 @@ const ReactTableCSV = ({
   };
 
   if (error) {
-    return <div>{error}</div>;
+    const { status, message } = error;
+    return <div>{status ? `${status}: ${message}` : message}</div>;
   }
 
   return (
