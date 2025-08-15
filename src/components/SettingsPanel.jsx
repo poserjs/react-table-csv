@@ -322,51 +322,6 @@ const SettingsPanel = ({
               </div>
             </div>
 
-            <label className={styles.checkboxRow}>
-              <input
-                type="checkbox"
-                checked={!!columnStyles[selectedColumn]?.groupBy}
-                onChange={(e) => updateColumnStyle(selectedColumn, 'groupBy', e.target.checked)}
-              />
-              <List size={16} />
-              <span>Group by this column</span>
-            </label>
-
-            {!columnStyles[selectedColumn]?.groupBy && (
-              <div className={styles.reducerGroup}>
-                <label className={styles.smallLabel}>Reducer:</label>
-                <select
-                  className={styles.select}
-                  value={columnStyles[selectedColumn]?.reducer || 'first'}
-                  onChange={(e) => updateColumnStyle(selectedColumn, 'reducer', e.target.value)}
-                >
-                  <option value="first">first</option>
-                  <option value="last">last</option>
-                  <option value="cnt">cnt</option>
-                  <option value="rowcnt">rowcnt</option>
-                  <option value="unique cnt">unique cnt</option>
-                  <option value="unique rowcnt">unique rowcnt</option>
-                  <option value="sum">sum</option>
-                  <option value="avg">avg</option>
-                  <option value="min">min</option>
-                  <option value="max">max</option>
-                  <option value="min-max">min - max</option>
-                  <option value="concat">concat</option>
-                  <option value="unique concat">unique concat</option>
-                  <option value="unique cnt">unique cnt</option>
-                </select>
-              </div>
-            )}
-
-            <label className={styles.checkboxRow}>
-              <input
-                type="checkbox"
-                checked={!!columnStyles[selectedColumn]?.splitBy}
-                onChange={(e) => updateColumnStyle(selectedColumn, 'splitBy', e.target.checked)}
-              />
-              <Scissors size={16} />
-              <span>Split table by this column</span>
-            </label>
           </div>
         </div>
       )}
