@@ -13,8 +13,8 @@ By participating, you agree to uphold a respectful, inclusive environment. Be ki
 - `src/` – component source (plain JSX/CSS)
   - `src/ReactTableCsv.jsx` – root component
   - `src/ReactTableCsv.module.css` – component styles
-  - `src/components/` – internal UI pieces (`DataTable.jsx`, `FilterDropdown.jsx`, `SettingsPanel.jsx`)
-  - `src/hooks/` – shared hooks (`useCsvData.js`)
+  - `src/components/` – internal UI pieces (`DataTable.jsx`, `FilterDropdown.jsx`, `SettingsPanel.jsx`, `Toolbar.jsx`)
+  - `src/hooks/` – shared hooks (`useCsvData.js`, `useTableState.js`)
   - `src/index.js` (entry that re-exports the component)
   - `src/__tests__/` – unit tests
 - `dist/` – transpiled output published to npm (generated)
