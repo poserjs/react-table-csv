@@ -267,8 +267,11 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     if (draggedColumn && draggedColumn !== targetHeader) {
       const newOrder = [...columnOrder];
       const draggedIndex = newOrder.indexOf(draggedColumn);
-      const targetIndex = newOrder.indexOf(targetHeader);
-      
+      let targetIndex = newOrder.indexOf(targetHeader);
+      if (draggedIndex < targetIndex) {
+        targetIndex -= 1;
+      }
+
       // Remove dragged column and insert at target position
       newOrder.splice(draggedIndex, 1);
       newOrder.splice(targetIndex, 0, draggedColumn);
