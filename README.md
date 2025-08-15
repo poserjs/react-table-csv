@@ -48,7 +48,7 @@ export default function Page() {
 
 ## Props
 - `csvString?: string` CSV text to render.
-- `csvURL?: string` URL to fetch CSV data from.
+- `csvURL?: string` URL to fetch CSV data from. Non-OK responses surface an error with the HTTP status and message.
 - `csvData?: object` Result of `Papa.parse` (`{ data, meta: { fields } }`) to use directly.
   One of `csvString`, `csvURL`, or `csvData` must be provided.
 - `downloadFilename?: string` Filename for exports. Default `"data.csv"`.
