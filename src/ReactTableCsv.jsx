@@ -143,6 +143,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
   };
 
   useEffect(() => {
+    const controller = new AbortController();
     const loadData = async () => {
       try {
         if (csvString) {
@@ -154,19 +155,24 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
           setOriginalHeaders(headers);
           setData(data);
         } else if (csvURL) {
-          const res = await fetch(csvURL);
+          const res = await fetch(csvURL, { signal: controller.signal });
           const text = await res.text();
+          if (controller.signal.aborted) return;
           const { headers, data } = parseCSV(text);
+          if (controller.signal.aborted) return;
           setOriginalHeaders(headers);
           setData(data);
         } else {
           setError('One of csvString, csvData, or csvURL must be provided.');
         }
-      } catch {
-        setError('Failed to load CSV data.');
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          setError('Failed to load CSV data.');
+        }
       }
     };
     loadData();
+    return () => controller.abort();
   }, [csvString, csvData, csvURL]);
 
   // State management
