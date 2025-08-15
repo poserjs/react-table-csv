@@ -1,7 +1,22 @@
 import React, { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
-import { ChevronUp, ChevronDown, Filter, X, Search, List, WrapText, EyeOff, GripVertical, Pin, PinOff, Settings as SettingsIcon, Scissors } from 'lucide-react';
+import {
+  ChevronUp,
+  ChevronDown,
+  Filter,
+  X,
+  Search,
+  List,
+  WrapText,
+  EyeOff,
+  GripVertical,
+  Pin,
+  PinOff,
+  Settings as SettingsIcon,
+  Scissors,
+} from 'lucide-react';
 import FilterDropdown from './FilterDropdown';
 import styles from '../ReactTableCsv.module.css';
+import sortRows from '../utils/sortRows';
 
 const DataTable = ({
   data,
@@ -475,45 +490,10 @@ const DataTable = ({
 
   const displayedRows = groupByColumns.length > 0 ? groupedData : filteredData;
 
-  const sortedRows = useMemo(() => {
-    const sorts = visibleHeaders
-      .map(h => ({ col: h, mode: columnStyles[h]?.sort || 'none' }))
-      .filter(s => s.mode && s.mode !== 'none');
-    if (sorts.length === 0) return displayedRows;
-    const toNum = (v) => {
-      if (typeof v === 'number') return v;
-      const n = parseFloat(v);
-      return isNaN(n) ? null : n;
-    };
-    const cmp = (a, b, mode, col) => {
-      const numeric = mode.includes('numbers');
-      const asc = mode.startsWith('up');
-      let av = a[col];
-      let bv = b[col];
-      if (numeric) {
-        const an = toNum(av);
-        const bn = toNum(bv);
-        if (an === null && bn === null) return 0;
-        if (an === null) return asc ? 1 : -1;
-        if (bn === null) return asc ? -1 : 1;
-        return asc ? an - bn : bn - an;
-      }
-      if (av == null && bv == null) return 0;
-      if (av == null) return asc ? 1 : -1;
-      if (bv == null) return asc ? -1 : 1;
-      const res = String(av).localeCompare(String(bv));
-      return asc ? res : -res;
-    };
-    const rows = [...displayedRows];
-    rows.sort((a, b) => {
-      for (const s of sorts) {
-        const r = cmp(a, b, s.mode, s.col);
-        if (r !== 0) return r;
-      }
-      return 0;
-    });
-    return rows;
-  }, [displayedRows, visibleHeaders, columnStyles]);
+  const sortedRows = useMemo(
+    () => sortRows(displayedRows, visibleHeaders, columnStyles),
+    [displayedRows, visibleHeaders, columnStyles]
+  );
 
   const splitByColumns = useMemo(() => {
     return originalHeaders.filter(h => columnStyles[h]?.splitBy);
@@ -1047,43 +1027,7 @@ const DataTable = ({
                   </thead>
                   <tbody>
                     {(() => {
-                      const rows = [...g.rows];
-                      const sorts = visibleHeaders
-                        .map(h => ({ col: h, mode: columnStyles[h]?.sort || 'none' }))
-                        .filter(s => s.mode && s.mode !== 'none');
-                      if (sorts.length) {
-                        const toNum = (v) => {
-                          if (typeof v === 'number') return v;
-                          const n = parseFloat(v);
-                          return isNaN(n) ? null : n;
-                        };
-                        const cmp = (a, b, mode, col) => {
-                          const numeric = mode.includes('numbers');
-                          const asc = mode.startsWith('up');
-                          let av = a[col];
-                          let bv = b[col];
-                          if (numeric) {
-                            const an = toNum(av);
-                            const bn = toNum(bv);
-                            if (an === null && bn === null) return 0;
-                            if (an === null) return asc ? 1 : -1;
-                            if (bn === null) return asc ? -1 : 1;
-                            return asc ? an - bn : bn - an;
-                          }
-                          if (av == null && bv == null) return 0;
-                          if (av == null) return asc ? 1 : -1;
-                          if (bv == null) return asc ? -1 : 1;
-                          const res = String(av).localeCompare(String(bv));
-                          return asc ? res : -res;
-                        };
-                        rows.sort((a, b) => {
-                          for (const s of sorts) {
-                            const r = cmp(a, b, s.mode, s.col);
-                            if (r !== 0) return r;
-                          }
-                          return 0;
-                        });
-                      }
+                      const rows = sortRows([...g.rows], visibleHeaders, columnStyles);
                       return rows;
                     })().map((row, index) => (
                       <tr key={row._id || row._gid || index} className={styles.row}>
