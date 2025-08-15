@@ -24,49 +24,49 @@ const Toolbar = ({
       <div className={styles.controlsLeft}>
         {customize && (
           <>
-            <button
-              onClick={() => setShowFilterRow(!showFilterRow)}
-              className={`${styles.btn} ${showFilterRow ? styles.btnPrimaryActive : styles.btnSecondary}`}
-            >
+              <button
+                onClick={() => setShowFilterRow(!showFilterRow)}
+                className={`${styles.btn} ${showFilterRow ? styles.btnPrimaryActive : ''}`}
+              >
               <Filter size={18} />
               {showFilterRow ? 'Hide Filters' : 'Show Filters'}
             </button>
 
-            <button onClick={clearAllFilters} className={`${styles.btn} ${styles.btnSecondary}`}>
+              <button onClick={clearAllFilters} className={styles.btn}>
               <X size={18} />
               Reset Filters
             </button>
 
             <button
               onClick={() => setShowStylePanel(!showStylePanel)}
-              className={`${styles.btn} ${showStylePanel ? styles.btnAccentActive : styles.btnSecondary}`}
+                className={`${styles.btn} ${showStylePanel ? styles.btnAccentActive : ''}`}
             >
               <SettingsIcon size={18} />
               {showStylePanel ? 'Hide Settings' : 'Settings'}
             </button>
 
-            <button onClick={resetSettings} className={`${styles.btn} ${styles.btnSecondary}`} title="Reset all settings to defaults">
+              <button onClick={resetSettings} className={styles.btn} title="Reset all settings to defaults">
               <RefreshCw size={18} />
               Reset Settings
             </button>
 
-            <button onClick={handleCopyUrl} className={`${styles.btn} ${styles.btnSecondary}`} title="Copy URL with current settings">
+              <button onClick={handleCopyUrl} className={styles.btn} title="Copy URL with current settings">
               Copy URL
             </button>
           </>
         )}
 
-        <button onClick={handleCopyMarkdown} className={`${styles.btn} ${styles.btnSecondary}`} title="Copy current view as Markdown">
+          <button onClick={handleCopyMarkdown} className={styles.btn} title="Copy current view as Markdown">
           <Copy size={18} />
           Copy Markdown
         </button>
 
-        <button onClick={handleCopyCsv} className={`${styles.btn} ${styles.btnSecondary}`} title="Copy current view as CSV">
+          <button onClick={handleCopyCsv} className={styles.btn} title="Copy current view as CSV">
           <Copy size={18} />
           Copy CSV
         </button>
 
-        <button onClick={handleDownload} className={`${styles.btn} ${styles.btnSecondary}`} title="Download current view as CSV">
+          <button onClick={handleDownload} className={styles.btn} title="Download current view as CSV">
           <Download size={18} />
           Download CSV
         </button>
