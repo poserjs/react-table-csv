@@ -1,6 +1,6 @@
 # Contributing to react-table-csv
 
-Thanks for your interest in contributing! This repo contains a small, framework‑agnostic React component in `src/` and a Next.js demo app in `demo/` used for local development and showcasing. The package is published to npm as `@poserjs/react-table-csv`.
+Thanks for your interest in contributing! This repo contains a small, framework‑agnostic React component in `src/` and a Vite demo app in `demo/` used for local development and showcasing. The package is published to npm as `@poserjs/react-table-csv`.
 
 Please read this guide before opening an issue or pull request.
 
@@ -11,12 +11,15 @@ By participating, you agree to uphold a respectful, inclusive environment. Be ki
 
 ## Project Structure
 - `src/` – component source (plain JSX/CSS)
-  - `src/ReactTableCsv.jsx`
-  - `src/ReactTableCsv.module.css`
+  - `src/ReactTableCsv.jsx` – root component
+  - `src/ReactTableCsv.module.css` – component styles
+  - `src/components/` – internal UI pieces (`DataTable.jsx`, `FilterDropdown.jsx`, `SettingsPanel.jsx`)
+  - `src/hooks/` – shared hooks (`useCsvData.js`)
   - `src/index.js` (entry that re-exports the component)
+  - `src/__tests__/` – unit tests
 - `dist/` – transpiled output published to npm (generated)
-- `demo/` – VITE spa
-  - `demo/app/**/*` pages and layout
+- `demo/` – Vite SPA
+  - `demo/src/**/*` app code
   - `demo/package.json` with scripts: `dev`, `build`, `lint`, `preview`
 - Root configs: `.babelrc.json`, `.eslintrc.json`, `package.json`
 
