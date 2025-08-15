@@ -7,7 +7,6 @@ export interface ReactTableCSVProps {
   downloadFilename?: string;
   storageKey?: string;
   defaultSettings?: string | null;
-  theme?: 'lite' | 'dark' | 'solarized' | 'dracula' | 'monokai' | 'gruvbox';
 }
 
 export const ReactTableCSV: React.FC<ReactTableCSVProps>;
