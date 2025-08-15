@@ -259,7 +259,7 @@ const DataTable = ({
         const declaredType = columnStyles[key]?.type || 'auto';
         const mode = declaredType === 'number' ? 'number' : (declaredType === 'text' ? 'text' : (typeof r === 'number' ? 'number' : 'text'));
         if (!parsed) {
-          return r?.toString().toLowerCase().includes(String(value).toLowerCase());
+          return String(r ?? "").toLowerCase().includes(String(value).toLowerCase());
         }
         const { op, rhs } = parsed;
         return cmp(op, r, rhs, mode);
