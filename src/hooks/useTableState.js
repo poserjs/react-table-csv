@@ -217,33 +217,38 @@ const useTableState = ({
   ]);
 
   const resetSettings = () => {
-    if (defaultSettingsObj) {
-      applySettings(defaultSettingsObj);
-      try {
-        window.localStorage.setItem(
-          storageKey,
-          JSON.stringify(defaultSettingsObj)
-        );
-      } catch {
-        /* ignore */
-      }
-    } else {
-      setColumnStyles({});
-      setColumnOrder(originalHeaders);
-      setHiddenColumns(new Set());
-      setFilters({});
-      setDropdownFilters({});
-      setFilterMode({});
-      setShowFilterRow(false);
-      setPinnedAnchor(null);
-      setShowRowNumbers(false);
-      setCurrentTheme('lite');
-      try {
+    const initial = defaultSettingsObj
+      ? { ...defaultSettingsObj }
+      : {
+          columnStyles: {},
+          columnOrder: originalHeaders,
+          hiddenColumns: [],
+          filters: {},
+          dropdownFilters: {},
+          filterMode: {},
+          showFilterRow: false,
+          pinnedAnchor: null,
+          showRowNumbers: false,
+          theme: 'lite',
+          customize: false,
+        };
+
+    if (typeof initial.customize !== 'boolean') initial.customize = false;
+
+    applySettings(initial);
+    setShowStylePanel(false);
+
+    try {
+      if (defaultSettingsObj) {
+        window.localStorage.setItem(storageKey, JSON.stringify(initial));
+      } else {
         window.localStorage.removeItem(storageKey);
-      } catch {
-        /* ignore */
       }
+    } catch {
+      /* ignore */
     }
+
+    return initial;
   };
 
   return {

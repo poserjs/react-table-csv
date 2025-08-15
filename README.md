@@ -59,6 +59,9 @@ export default function Page() {
 ## Exported/Imported Settings (high‑level)
 - `{ version, theme, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize }`
 
+## Resetting Settings
+Call `resetSettings()` to revert the table to its initial configuration. The reset also turns off customize mode (or respects a `customize` value from provided defaults) and returns the applied settings object.
+
 ## Development
 See the [CONTRIBUTING.md](./CONTRIBUTING.md) file for details.
 
