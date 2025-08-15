@@ -33,7 +33,6 @@ export default function Page() {
         downloadFilename="data.csv"
         storageKey="react-table-csv-key"
         defaultSettings=""
-        theme="dark"
       />
     </main>
   );
@@ -55,10 +54,10 @@ export default function Page() {
 - `downloadFilename?: string` Filename for exports. Default `"data.csv"`.
 - `storageKey?: string` localStorage key for settings. Default `"react-table-csv-key"`.
 - `defaultSettings?: string` JSON string (same schema as exported) used as defaults and fallback if localStorage is missing/corrupt.
-- `theme?: 'lite' | 'dark' | 'solarized' | 'dracula' | 'monokai' | 'gruvbox'` Visual theme for the component. Default `"lite"`.
+- Theme selection is managed inside the component's settings. Use the Settings panel to cycle themes; the current theme is saved to `localStorage` and included when exporting settings.
 
 ## Exported/Imported Settings (high‑level)
-- `{ version, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize }`
+- `{ version, theme, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize }`
 
 ## Development
 See the [CONTRIBUTING.md](./CONTRIBUTING.md) file for details.

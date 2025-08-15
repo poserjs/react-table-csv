@@ -93,7 +93,7 @@ const FilterDropdown = ({ values, selectedValues, onSelectionChange, onClose }) 
 const SETTINGS_VERSION = '0.1';
 const THEMES = ['lite', 'dark', 'solarized', 'dracula', 'monokai', 'gruvbox'];
 
-const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.csv', storageKey = 'react-table-csv-key', defaultSettings = '', theme = 'lite' }) => {
+const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.csv', storageKey = 'react-table-csv-key', defaultSettings = '' }) => {
   // Parse CSV using PapaParse for robust handling (quotes, commas, BOM)
   const parseCSV = (csv) => {
     const result = Papa.parse(csv, {
@@ -134,7 +134,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
   const [originalHeaders, setOriginalHeaders] = useState([]);
   const [data, setData] = useState([]);
   const [error, setError] = useState('');
-  const [currentTheme, setCurrentTheme] = useState(theme);
+  const [currentTheme, setCurrentTheme] = useState('lite');
 
   const cycleTheme = () => {
     const idx = THEMES.indexOf(currentTheme);
@@ -852,6 +852,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     });
     return {
       version: SETTINGS_VERSION,
+      theme: currentTheme,
       columnStyles,
       columnOrder,
       hiddenColumns: Array.from(hiddenColumns),
@@ -863,7 +864,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       showRowNumbers,
       customize: customize,
     };
-  }, [columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize]);
+  }, [columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize, currentTheme]);
 
   const applySettings = useCallback((s) => {
     try {
@@ -884,6 +885,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       if (typeof s.pinnedAnchor === 'string' || s.pinnedAnchor === null) setPinnedAnchor(s.pinnedAnchor);
       if (typeof s.showRowNumbers === 'boolean') setShowRowNumbers(s.showRowNumbers);
       if (typeof s.customize === 'boolean') setCustomize(s.customize);
+      if (typeof s.theme === 'string') setCurrentTheme(s.theme);
       // backward-compat: older settings may use `editable`
       if (typeof s.editable === 'boolean' && typeof s.customize !== 'boolean') setCustomize(s.editable);
     } catch {
@@ -934,6 +936,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
     pinnedAnchor,
     showRowNumbers,
     customize,
+    currentTheme,
     storageKey,
     buildSettings,
   ]);
@@ -977,6 +980,7 @@ const ReactTableCSV = ({ csvString, csvURL, csvData, downloadFilename = 'data.cs
       setShowFilterRow(false);
       setPinnedAnchor(null);
       setShowRowNumbers(false);
+      setCurrentTheme('lite');
       try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ }
     }
   };
