@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Papa from 'papaparse';
+import { parseCSV, normalizeParsed } from '../utils/csv';
 
 /**
  * Load CSV data from a string, URL, or pre-parsed object.
@@ -7,41 +7,6 @@ import Papa from 'papaparse';
  * `status` and `message` fields.
  */
 const useCsvData = ({ csvString, csvURL, csvData }) => {
-  const parseCSV = (csv) => {
-    const result = Papa.parse(csv, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      transformHeader: (h) => (h || '').trim(),
-      transform: (v) => (typeof v === 'string' ? v.trim() : v),
-    });
-
-    const headers = result.meta?.fields || [];
-    const data = (result.data || []).map((row, idx) => {
-      const obj = {};
-      headers.forEach((h) => {
-        obj[h] = row[h] !== undefined && row[h] !== null ? row[h] : '';
-      });
-      obj._id = idx + 1;
-      return obj;
-    });
-    return { headers, data };
-  };
-
-  const normalizeParsed = (parsed) => {
-    const headers = parsed?.meta?.fields || parsed?.headers || [];
-    const rows = parsed?.data || [];
-    const data = rows.map((row, idx) => {
-      const obj = {};
-      headers.forEach((h) => {
-        obj[h] = row[h] !== undefined && row[h] !== null ? row[h] : '';
-      });
-      obj._id = idx + 1;
-      return obj;
-    });
-    return { headers, data };
-  };
-
   const [originalHeaders, setOriginalHeaders] = useState([]);
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
