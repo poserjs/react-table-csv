@@ -144,8 +144,13 @@ const useTableState = ({
       try {
         if (!s || typeof s !== 'object') return;
         if (s.columnStyles) setColumnStyles(s.columnStyles);
-        if (Array.isArray(s.columnOrder))
-          setColumnOrder(s.columnOrder.filter((h) => originalHeaders.includes(h)));
+        if (Array.isArray(s.columnOrder)) {
+          const filtered = s.columnOrder.filter((h) =>
+            originalHeaders.includes(h)
+          );
+          const missing = originalHeaders.filter((h) => !filtered.includes(h));
+          setColumnOrder([...filtered, ...missing]);
+        }
         if (Array.isArray(s.hiddenColumns))
           setHiddenColumns(new Set(s.hiddenColumns.filter((h) => originalHeaders.includes(h))));
         if (s.filters && typeof s.filters === 'object') setFilters(s.filters);
