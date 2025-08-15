@@ -122,7 +122,6 @@
 .controlsLeft { display: flex; align-items: center; gap: 8px; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--btn-text); cursor: pointer; transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
 .btn:hover { background: var(--surface-alt); }
-.btnSecondary {}
 .btnPrimaryActive { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.35); border-color: transparent; }
 .btnPrimaryActive:hover,
 .btnPrimaryActive:focus { background: var(--primary); color: #fff; border-color: transparent; }
@@ -187,10 +186,6 @@
 .theadRow .iconBtn:hover { background: rgba(255,255,255,0.12); }
 .theadRow .iconBtnActive { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.45); color: #fff; }
 
-.theadRow .iconBtn { background: transparent; border-color: rgba(255,255,255,0.25); color: #fff; }
-.theadRow .iconBtn:hover { background: rgba(255,255,255,0.12); }
-.theadRow .iconBtnActive { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.45); color: #fff; }
-
 .th { position: relative; text-align: left; padding: 10px 12px; font-weight: 600; border-bottom: 1px solid var(--border); user-select: none; }
 .thDragOver { background: #374151; }
 .stickyHead { position: sticky; left: 0; z-index: 4; background: var(--thead); color: #fff; }
@@ -198,9 +193,6 @@
 .headerTop { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 .headerRight { display: inline-flex; align-items: center; gap: 6px; }
 .headerBottom { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
-.headerTop { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-.headerRight { display: inline-flex; align-items: center; gap: 6px; }
-.headerBottom { display: flex; gap: 6px; margin-top: 4px; }
 .thLeft { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .headerBtns { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
 .sortIcons { display: flex; flex-direction: column; margin-left: 4px; }
