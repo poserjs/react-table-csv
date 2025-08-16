@@ -124,6 +124,7 @@ const ReactTableCSV = ({
 
           <SettingsPanel
             {...table}
+            visibleHeaders={table.tableState.visibleHeaders}
             originalHeaders={originalHeaders}
             storageKey={storageKey}
           />

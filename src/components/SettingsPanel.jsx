@@ -11,7 +11,7 @@ const SettingsPanel = ({
   hiddenColumns,
   toggleColumnVisibility,
   setPinnedAnchor,
-  visibleHeaders,
+  visibleHeaders = [],
   pinnedIndex,
   cycleTheme,
   currentTheme,
