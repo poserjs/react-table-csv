@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`buildSettings builds settings from state 1`] = `
+{
+  "columnOrder": [
+    "col1",
+    "col2",
+  ],
+  "columnStyles": {
+    "col1": {
+      "width": 100,
+    },
+  },
+  "customize": true,
+  "dropdownFilters": {
+    "col2": [
+      "a",
+      "b",
+    ],
+  },
+  "filterMode": {
+    "col1": "contains",
+  },
+  "filters": {
+    "col1": "foo",
+  },
+  "hiddenColumns": [
+    "col2",
+  ],
+  "pinnedAnchor": "col1",
+  "showFilterRow": true,
+  "showRowNumbers": true,
+  "theme": "dark",
+  "version": "0.1",
+}
+`;
