@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { cycleTheme as getNextTheme } from './themeUtils';
-
-const SETTINGS_VERSION = '0.1';
+import { buildSettings as createSettings, SETTINGS_VERSION } from './settingsUtils';
 
 const useTableState = ({
   originalHeaders = [],
@@ -104,38 +103,35 @@ const useTableState = ({
   };
 
   const settingsRestoredRef = useRef(false);
-  const buildSettings = useCallback(() => {
-    const dropdown = {};
-    Object.entries(dropdownFilters).forEach(([k, v]) => {
-      dropdown[k] = Array.from(v || []);
-    });
-    return {
-      version: SETTINGS_VERSION,
-      theme: currentTheme,
+  const buildSettings = useCallback(
+    () =>
+      createSettings({
+        currentTheme,
+        columnStyles,
+        columnOrder,
+        hiddenColumns,
+        filters,
+        dropdownFilters,
+        filterMode,
+        showFilterRow,
+        pinnedAnchor,
+        showRowNumbers,
+        customize,
+      }),
+    [
+      currentTheme,
       columnStyles,
       columnOrder,
-      hiddenColumns: Array.from(hiddenColumns),
+      hiddenColumns,
       filters,
-      dropdownFilters: dropdown,
+      dropdownFilters,
       filterMode,
       showFilterRow,
       pinnedAnchor,
       showRowNumbers,
       customize,
-    };
-  }, [
-    columnStyles,
-    columnOrder,
-    hiddenColumns,
-    filters,
-    dropdownFilters,
-    filterMode,
-    showFilterRow,
-    pinnedAnchor,
-    showRowNumbers,
-    customize,
-    currentTheme,
-  ]);
+    ]
+  );
 
   const applySettings = useCallback(
     (s) => {
