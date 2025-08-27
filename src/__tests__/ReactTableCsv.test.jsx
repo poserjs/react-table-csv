@@ -71,4 +71,23 @@ describe('ReactTableCSV', () => {
     expect(screen.getByText('Settings')).toBeInTheDocument();
     expect(screen.queryByText('Hide Settings')).not.toBeInTheDocument();
   });
+
+  it('respects the collapsed prop and toggles', () => {
+    const csvData = {
+      headers: ['id', 'name'],
+      data: [
+        { id: 1, name: 'Alice' },
+      ],
+    };
+
+    render(<ReactTableCSV csvData={csvData} title="Sample" collapsed />);
+
+    // Table content rendered but hidden initially
+    const info = screen.getByText('Showing 1 of 1 rows | 2 of 2 columns');
+    expect(info).not.toBeVisible();
+
+    // Expand and expect content to be visible
+    fireEvent.click(screen.getByText('Expand'));
+    expect(info).toBeVisible();
+  });
 });

@@ -14,10 +14,15 @@ const ReactTableCSV = ({
   downloadFilename = 'data.csv',
   storageKey = 'react-table-csv-key',
   defaultSettings = '',
-  onThemeChange,
+  title,
+  collapsed: collapsedProp = false,
 }) => {
   const { originalHeaders, data, error } = useCsvData({ csvString, csvURL, csvData });
   const [customize, setCustomize] = useState(false);
+  const [collapsed, setCollapsed] = useState(!!collapsedProp);
+
+  // Sync internal collapsed state when prop changes
+  useEffect(() => { setCollapsed(!!collapsedProp); }, [collapsedProp]);
 
   const table = useTableState({
     originalHeaders,
@@ -26,14 +31,6 @@ const ReactTableCSV = ({
     customize,
     setCustomize,
   });
-
-  // Notify parent (e.g., dashboard) when theme changes to keep wrappers in sync
-  // Note: do not depend on onThemeChange reference to avoid render loops
-  useEffect(() => {
-    if (typeof onThemeChange === 'function') {
-      try { onThemeChange(table.currentTheme); } catch { /* ignore */ }
-    }
-  }, [table.currentTheme]);
 
   // When leaving customize mode, auto-hide the Settings panel for a clearer UX
   useEffect(() => {
@@ -120,38 +117,85 @@ const ReactTableCSV = ({
     const { status, message } = error;
     return <div>{status ? `${status}: ${message}` : message}</div>;
   }
+  const tableBody = (
+    <>
+      <Toolbar
+        {...table}
+        customize={customize}
+        setCustomize={setCustomize}
+        tableState={table.tableState}
+        dataCount={data.length}
+        headersCount={originalHeaders.length}
+        handleCopyUrl={handleCopyUrl}
+        handleCopyMarkdown={handleCopyMarkdown}
+        handleCopyCsv={handleCopyCsv}
+        handleDownload={handleDownload}
+      />
+
+      <SettingsPanel
+        {...table}
+        visibleHeaders={table.tableState.visibleHeaders}
+        originalHeaders={originalHeaders}
+        storageKey={storageKey}
+      />
+
+      <DataTable
+        {...table}
+        data={data}
+        originalHeaders={originalHeaders}
+        isCustomize={customize}
+        onDataProcessed={table.setTableState}
+      />
+    </>
+  );
+
+  if (!title) {
+    return (
+      <div className={`${styles.root} ${styles[table.currentTheme] || styles.lite}`}>
+        <div className={styles.container}>
+          <div className={styles.card}>{tableBody}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={`${styles.root} ${styles[table.currentTheme] || styles.lite}`}>
-      <div className={styles.container}>
-        <div className={styles.card}>
-          <Toolbar
-            {...table}
-            customize={customize}
-            setCustomize={setCustomize}
-            tableState={table.tableState}
-            dataCount={data.length}
-            headersCount={originalHeaders.length}
-            handleCopyUrl={handleCopyUrl}
-            handleCopyMarkdown={handleCopyMarkdown}
-            handleCopyCsv={handleCopyCsv}
-            handleDownload={handleDownload}
-          />
-
-          <SettingsPanel
-            {...table}
-            visibleHeaders={table.tableState.visibleHeaders}
-            originalHeaders={originalHeaders}
-            storageKey={storageKey}
-          />
-
-          <DataTable
-            {...table}
-            data={data}
-            originalHeaders={originalHeaders}
-            isCustomize={customize}
-            onDataProcessed={table.setTableState}
-          />
+    <div
+      className={styles[table.currentTheme] || styles.lite}
+      style={{ marginBottom: 16, border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)' }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '8px 12px',
+          background: 'var(--control-bg)',
+          borderBottom: '1px solid var(--border)',
+          color: 'var(--text)',
+        }}
+      >
+        <div style={{ fontWeight: 600 }}>{title}</div>
+        <button
+          onClick={() => setCollapsed((c) => !c)}
+          style={{
+            fontSize: 12,
+            padding: '4px 8px',
+            border: '1px solid var(--border)',
+            borderRadius: 4,
+            background: 'var(--surface)',
+            color: 'var(--btn-text)',
+            cursor: 'pointer',
+          }}
+        >
+          {collapsed ? 'Expand' : 'Collapse'}
+        </button>
+      </div>
+      <div style={{ padding: 8, display: collapsed ? 'none' : 'block' }}>
+        <div className={styles.root}>
+          <div className={styles.container}>
+            <div className={styles.card}>{tableBody}</div>
+          </div>
         </div>
       </div>
     </div>

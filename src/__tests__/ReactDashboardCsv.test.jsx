@@ -79,7 +79,7 @@ describe('ReactDashboardCSV', () => {
     }, { timeout: 2000 });
   });
 
-  it('preserves theme and settings across collapse/expand and syncs header theme', async () => {
+  it('preserves theme across collapse/expand', async () => {
     render(
       <ReactDashboardCSV
         datasets={{ sample: { csvString: 'a,b\n1,2' } }}
