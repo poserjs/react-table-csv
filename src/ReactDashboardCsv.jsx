@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactTableCSV from './ReactTableCsv';
 import { normalizeParsed } from './utils/csv';
-import styles from './ReactTableCsv.module.css';
 
 const errorToString = (e) => {
   try {
@@ -17,43 +16,6 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb' }) => {
   const [results, setResults] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [collapsedStates, setCollapsedStates] = useState({});
-  const [headerThemes, setHeaderThemes] = useState({});
-
-  // Initialize per-view collapsed state when views change
-  useEffect(() => {
-    setCollapsedStates((prev) => {
-      const next = { ...prev };
-      for (const [vid, v] of Object.entries(views || {})) {
-        if (next[vid] === undefined) next[vid] = !!v?.collapsed;
-      }
-      // Remove stale keys that no longer exist
-      for (const k of Object.keys(next)) {
-        if (!(k in (views || {}))) delete next[k];
-      }
-      return next;
-    });
-    setHeaderThemes((prev) => {
-      const next = { ...prev };
-      for (const [vid, v] of Object.entries(views || {})) {
-        if (next[vid] === undefined) {
-          let theme = 'lite';
-          try {
-            const ds = v?.props?.defaultSettings;
-            if (ds) {
-              const parsed = JSON.parse(ds);
-              if (parsed && parsed.theme) theme = parsed.theme;
-            }
-          } catch {/* ignore */}
-          next[vid] = theme;
-        }
-      }
-      for (const k of Object.keys(next)) {
-        if (!(k in (views || {}))) delete next[k];
-      }
-      return next;
-    });
-  }, [views]);
 
   useEffect(() => {
     let cancelled = false;
@@ -280,9 +242,6 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb' }) => {
   return (
     <div>
       {Object.entries(views || {}).map(([vid, v]) => {
-        const isCollapsed = !!collapsedStates[vid];
-        const toggle = () => setCollapsedStates((prev) => ({ ...prev, [vid]: !prev[vid] }));
-        const theme = headerThemes[vid] || 'lite';
         const mergedProps = { ...(v.props || {}) };
         if (!mergedProps.storageKey) mergedProps.storageKey = `react-table-csv-${vid}`;
         // When db is 'none', pass through the underlying dataset directly to ReactTableCSV
@@ -302,22 +261,14 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb' }) => {
           }
         }
         return (
-          <div key={vid} className={styles[theme] || styles.lite} style={{ marginBottom: 16, border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--control-bg)', borderBottom: '1px solid var(--border)', color: 'var(--text)' }}>
-              <div style={{ fontWeight: 600 }}>{v?.title || vid}</div>
-              <button onClick={toggle} style={{ fontSize: 12, padding: '4px 8px', border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', color: 'var(--btn-text)', cursor: 'pointer' }}>
-                {isCollapsed ? 'Expand' : 'Collapse'}
-              </button>
-            </div>
-            <div style={{ padding: 8, display: isCollapsed ? 'none' : 'block' }}>
-              <ReactTableCSV
-                {...(db === 'duckdb' ? { csvData: results[vid] || { headers: [], data: [] } } : {})}
-                {...passthroughProps}
-                onThemeChange={(t) => setHeaderThemes((prev) => (prev[vid] === t ? prev : { ...prev, [vid]: t }))}
-                {...mergedProps}
-              />
-            </div>
-          </div>
+          <ReactTableCSV
+            key={vid}
+            title={v?.title || vid}
+            collapsed={!!v?.collapsed}
+            {...(db === 'duckdb' ? { csvData: results[vid] || { headers: [], data: [] } } : {})}
+            {...passthroughProps}
+            {...mergedProps}
+          />
         );
       })}
     </div>

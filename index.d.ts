@@ -7,7 +7,8 @@ export interface ReactTableCSVProps {
   downloadFilename?: string;
   storageKey?: string;
   defaultSettings?: string | null;
-  onThemeChange?: (theme: string) => void;
+  title?: string;
+  collapsed?: boolean;
 }
 
 export const ReactTableCSV: React.FC<ReactTableCSVProps>;

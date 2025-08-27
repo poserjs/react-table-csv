@@ -99,6 +99,8 @@ Notes
 - `downloadFilename?: string` Filename for exports. Default `"data.csv"`.
 - `storageKey?: string` localStorage key for settings. Default `"react-table-csv-key"`.
 - `defaultSettings?: string` JSON string (same schema as exported) used as defaults and fallback if localStorage is missing/corrupt.
+- `title?: string` Optional title displayed in a themed header above the table.
+- `collapsed?: boolean` Render the table initially collapsed with a toggle in the header.
 - Theme selection is managed inside the component's settings. Use the Settings panel to cycle themes; the current theme is saved to `localStorage` and included when exporting settings.
 
 ### ReactDashboardCSV Props
