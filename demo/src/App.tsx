@@ -11,6 +11,7 @@ const App: React.FC = () => {
       <h1>Demo</h1>
       <div>
         <ReactTableCSV csvString={sampleCSV} defaultSettings={sampleSettings} title="react-table-csv"/>
+        <ReactTableCSV csvURL="http://localhost:5173/us-cities-demographics.csv" title="react-table-csv"/>
       </div>
 
       <h2 style={{ marginTop: 24 }}>Dashboard</h2>
@@ -19,6 +20,7 @@ const App: React.FC = () => {
           datasets={{
             capitals: { title: 'US State Capitals', csvURL: 'http://localhost:5173/us-state-capitals.csv' },
             cities: { title: 'US Top 1k Cities (multi-year)', csvURL: 'http://localhost:5173/us-cities-top-1k-multi-year.csv' },
+            demographics: { title: 'US Cities Demographics', csvURL: 'http://localhost:5173/us-cities-demographics.csv' },
           }}
           views={{
             'by-initial': {
@@ -79,6 +81,20 @@ const App: React.FC = () => {
                 downloadFilename: 'top-us-cities-2014.csv',
               },
             },
+            'demographics-all': {
+              title: 'US Cities Demographics (All Columns)',
+              collapsed: false,
+              sql: `SELECT * FROM demographics AS d`,
+              props: {
+                defaultSettings: JSON.stringify({
+                  version: '0.1',
+                  theme: 'lite',
+                  showFilterRow: true,
+                  showRowNumbers: true,
+                }),
+                downloadFilename: 'us-cities-demographics-all.csv',
+              },
+            },
           }}
         />
       </div>
@@ -110,4 +126,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-

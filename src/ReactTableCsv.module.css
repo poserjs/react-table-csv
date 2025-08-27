@@ -108,11 +108,14 @@
   padding: 4px;
   background: var(--bg);
   color: var(--text);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-.container { margin: 0 auto; }
+.container { margin: 0 auto; max-width: 100%; width: 100%; overflow-x: hidden; }
 
-.card { background: var(--surface); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); overflow: hidden; }
+.card { background: var(--surface); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); overflow: hidden; max-width: 100%; }
 
 .header { padding: 24px; color: #fff; background: linear-gradient(90deg, var(--primary), var(--accent)); }
 .title { margin: 0 0 6px 0; font-size: 22px; font-weight: 700; }
@@ -180,14 +183,14 @@
 .hiddenPill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid var(--border); background: var(--surface-alt); color: var(--text); border-radius: 999px; cursor: pointer; }
 .hiddenPill:hover { background: var(--row-hover); border-color: var(--primary); }
 
-.tableWrap { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+.tableWrap { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; max-width: 100%; width: 100%; min-width: 0; }
 .table { width: max-content; min-width: max-content; border-collapse: separate; border-spacing: 0; }
 .theadRow { background: var(--thead); color: #fff; }
 .theadRow .iconBtn { background: transparent; border-color: rgba(255,255,255,0.25); color: #fff; }
 .theadRow .iconBtn:hover { background: rgba(255,255,255,0.12); }
 .theadRow .iconBtnActive { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.45); color: #fff; }
 
-.th { position: relative; text-align: left; padding: 10px 12px; font-weight: 600; border-bottom: 1px solid var(--border); user-select: none; }
+.th { position: relative; text-align: left; padding: 8px 10px; font-weight: 600; border-bottom: 1px solid var(--border); user-select: none; }
 .thDragOver { background: #374151; }
 .stickyHead { position: sticky; left: 0; z-index: 4; background: var(--thead); color: #fff; }
 .thInner { display: flex; flex-direction: column; align-items: stretch; }
@@ -203,23 +206,40 @@
 .rowNoHeadHidden { width: 0 !important; min-width: 0 !important; max-width: 0 !important; padding: 0 !important; border: none !important; }
 
 .filterRow { background: var(--filter-bg); border-bottom: 2px solid #cfe3ff; }
-.filterCell { position: relative; padding: 8px 12px; }
+.filterCell { position: relative; padding: 6px 10px; }
 .filterCellInner { display: flex; align-items: center; gap: 6px; }
 .iconBtn { padding: 6px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
 .iconBtnActive { background: var(--primary); color: #fff; border-color: transparent; }
-.flex1Relative { position: relative; flex: 1; }
-.dropdownTrigger { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); text-align: left; font-size: 13px; display: flex; align-items: center; justify-content: space-between; }
+.flex1Relative { position: relative; flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.dropdownTrigger { flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); text-align: left; font-size: 13px; display: flex; align-items: center; justify-content: space-between; }
 .truncate { display: inline-block; max-width: 85%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.clearFilterBtn { position: absolute; right: 32px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-.clearFilterBtn:hover { color: #475569; }
-.clearFilterBtnSmall { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-.clearFilterBtnSmall:hover { color: #475569; }
-.textFilter { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); color: var(--text); }
+.clearFilterBtn, .clearFilterBtnSmall {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  margin-left: 6px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.clearFilterBtn:hover, .clearFilterBtnSmall:hover {
+  background: var(--surface-alt);
+  color: #475569;
+  border: 1px solid var(--border);
+}
+.clearFilterBtn svg, .clearFilterBtnSmall svg { width: 12px; height: 12px; display: block; }
+.textFilter { flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); color: var(--text); }
 
 .row { background: var(--surface); border-bottom: 1px solid var(--border); transition: background 0.2s ease; }
 .row:nth-child(even) { background: var(--surface-alt); }
 .row:hover { background: var(--row-hover); }
-.cell { padding: 10px 12px; font-size: 14px; background: inherit; }
+.cell { padding: 6px 10px; font-size: 13px; line-height: 1.25; background: inherit; }
 .stickyCell { position: sticky; left: 0; z-index: 3; background: var(--surface); }
 .row:nth-child(even) .stickyCell { background: var(--surface-alt); }
 .row:hover .stickyCell { background: var(--row-hover); }

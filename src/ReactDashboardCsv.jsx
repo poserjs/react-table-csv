@@ -240,7 +240,7 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb' }) => {
   if (error) return <div><pre>{error}</pre></div>;
 
   return (
-    <div>
+    <div style={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
       {Object.entries(views || {}).map(([vid, v]) => {
         const mergedProps = { ...(v.props || {}) };
         if (!mergedProps.storageKey) mergedProps.storageKey = `react-table-csv-${vid}`;
@@ -261,14 +261,15 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb' }) => {
           }
         }
         return (
-          <ReactTableCSV
-            key={vid}
-            title={v?.title || vid}
-            collapsed={!!v?.collapsed}
-            {...(db === 'duckdb' ? { csvData: results[vid] || { headers: [], data: [] } } : {})}
-            {...passthroughProps}
-            {...mergedProps}
-          />
+          <div key={vid} style={{ width: '100%', maxWidth: '100%', minWidth: 0, overflowX: 'hidden' }}>
+            <ReactTableCSV
+              title={v?.title || vid}
+              collapsed={!!v?.collapsed}
+              {...(db === 'duckdb' ? { csvData: results[vid] || { headers: [], data: [] } } : {})}
+              {...passthroughProps}
+              {...mergedProps}
+            />
+          </div>
         );
       })}
     </div>

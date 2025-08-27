@@ -162,7 +162,7 @@ const ReactTableCSV = ({
   return (
     <div
       className={styles[table.currentTheme] || styles.lite}
-      style={{ marginBottom: 16, border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)' }}
+      style={{ marginBottom: 16, border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', maxWidth: '100%', minWidth: 0, overflowX: 'hidden' }}
     >
       <div
         style={{
@@ -191,8 +191,8 @@ const ReactTableCSV = ({
           {collapsed ? 'Expand' : 'Collapse'}
         </button>
       </div>
-      <div style={{ padding: 8, display: collapsed ? 'none' : 'block' }}>
-        <div className={styles.root}>
+      <div style={{ padding: 8, display: collapsed ? 'none' : 'block', maxWidth: '100%', minWidth: 0, overflowX: 'hidden' }}>
+        <div className={styles.root} style={{ minHeight: 0 }}>
           <div className={styles.container}>
             <div className={styles.card}>{tableBody}</div>
           </div>

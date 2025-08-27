@@ -772,7 +772,7 @@ const DataTable = ({
                                 }}
                                 className={styles.clearFilterBtn}
                               >
-                                <X size={14} />
+                                <X size={12} />
                               </button>
                             )}
                           </div>
@@ -796,7 +796,7 @@ const DataTable = ({
                                 }))}
                                 className={styles.clearFilterBtnSmall}
                               >
-                                <X size={14} />
+                                <X size={12} />
                               </button>
                             )}
                           </div>
