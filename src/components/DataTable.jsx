@@ -18,6 +18,38 @@ import FilterDropdown from './FilterDropdown';
 import styles from '../ReactTableCsv.module.css';
 import sortRows from '../utils/sortRows';
 
+const isIntegerString = (s) => typeof s === 'string' && /^\s*-?\d+\s*$/.test(s);
+const coerceToBigInt = (v) => {
+  if (typeof v === 'bigint') return v;
+  if (typeof v === 'number' && Number.isInteger(v)) return BigInt(v);
+  if (isIntegerString(v)) return BigInt(v.trim());
+  return null;
+};
+const coerceToNumber = (v) => {
+  if (typeof v === 'number') return Number.isNaN(v) ? null : v;
+  if (typeof v === 'bigint') {
+    const abs = v < 0n ? -v : v;
+    return abs <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(v) : null;
+  }
+  if (typeof v === 'string') {
+    const n = parseFloat(v);
+    return Number.isNaN(n) ? null : n;
+  }
+  return null;
+};
+const compareValues = (a, b) => {
+  if (a === b) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  const ai = coerceToBigInt(a);
+  const bi = coerceToBigInt(b);
+  if (ai !== null && bi !== null) return ai < bi ? -1 : ai > bi ? 1 : 0;
+  const an = coerceToNumber(a);
+  const bn = coerceToNumber(b);
+  if (an !== null && bn !== null) return an - bn;
+  return String(a).localeCompare(String(b));
+};
+
 const DataTable = ({
   data,
   originalHeaders,
@@ -222,10 +254,7 @@ const DataTable = ({
         const val = row[header];
         if (val !== undefined && val !== null && val !== '') values.add(val);
       });
-      result[header] = Array.from(values).sort((a, b) => {
-        if (!isNaN(a) && !isNaN(b)) return parseFloat(a) - parseFloat(b);
-        return a.toString().localeCompare(b.toString());
-      });
+      result[header] = Array.from(values).sort(compareValues);
     });
     return result;
   }, [data, originalHeaders]);

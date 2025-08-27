@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import useCsvData from './hooks/useCsvData';
 import useTableState from './hooks/useTableState';
@@ -14,6 +14,7 @@ const ReactTableCSV = ({
   downloadFilename = 'data.csv',
   storageKey = 'react-table-csv-key',
   defaultSettings = '',
+  onThemeChange,
 }) => {
   const { originalHeaders, data, error } = useCsvData({ csvString, csvURL, csvData });
   const [customize, setCustomize] = useState(false);
@@ -25,6 +26,21 @@ const ReactTableCSV = ({
     customize,
     setCustomize,
   });
+
+  // Notify parent (e.g., dashboard) when theme changes to keep wrappers in sync
+  // Note: do not depend on onThemeChange reference to avoid render loops
+  useEffect(() => {
+    if (typeof onThemeChange === 'function') {
+      try { onThemeChange(table.currentTheme); } catch { /* ignore */ }
+    }
+  }, [table.currentTheme]);
+
+  // When leaving customize mode, auto-hide the Settings panel for a clearer UX
+  useEffect(() => {
+    if (!customize) {
+      try { table.setShowStylePanel(false); } catch { /* ignore */ }
+    }
+  }, [customize]);
 
   const buildCsv = () => {
     if (!table.tableState.visibleHeaders.length) return null;
@@ -143,4 +159,3 @@ const ReactTableCSV = ({
 };
 
 export default ReactTableCSV;
-
