@@ -1,6 +1,6 @@
 {
   "name": "@poserjs/react-table-csv",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A single-file React component for exploring CSV data with filers, grouping, sorting, and CSV export/import.",
   "license": "MIT",
   "type": "module",
@@ -78,7 +78,9 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "testPathIgnorePatterns": ["/dist/"],
+    "testPathIgnorePatterns": [
+      "/dist/"
+    ],
     "transform": {
       "^.+\\.[tj]sx?$": "babel-jest"
     },
