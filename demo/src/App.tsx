@@ -8,12 +8,12 @@ const App: React.FC = () => {
 
   return (
     <>
-      <h1>@poserjs/react-table-csv</h1>
+      <h1>Demo</h1>
       <div>
-        <ReactTableCSV csvString={sampleCSV} defaultSettings={sampleSettings} />
+        <ReactTableCSV csvString={sampleCSV} defaultSettings={sampleSettings} title="react-table-csv"/>
       </div>
 
-      <h2 style={{ marginTop: 24 }}>Dashboard Demo</h2>
+      <h2 style={{ marginTop: 24 }}>Dashboard</h2>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
         <ReactDashboardCSV
           datasets={{
