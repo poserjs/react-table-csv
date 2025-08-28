@@ -9,6 +9,8 @@ export interface ReactTableCSVProps {
   defaultSettings?: string | null;
   title?: string;
   collapsed?: boolean;
+  maxHeight?: string;
+  fontSize?: number;
 }
 
 export const ReactTableCSV: React.FC<ReactTableCSVProps>;

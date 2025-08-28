@@ -15,6 +15,8 @@ describe('buildSettings', () => {
       pinnedAnchor: 'col1',
       showRowNumbers: true,
       customize: true,
+      tableMaxHeight: '500px',
+      fontSize: 14,
     };
     expect(buildSettings(state)).toMatchSnapshot();
   });
@@ -32,6 +34,8 @@ describe('buildSettings', () => {
       pinnedAnchor: null,
       showRowNumbers: false,
       customize: false,
+      tableMaxHeight: 'unlimited',
+      fontSize: 13,
     };
     const result = buildSettings(state);
     expect(Array.isArray(result.dropdownFilters.col1)).toBe(true);

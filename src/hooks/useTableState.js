@@ -8,6 +8,8 @@ const useTableState = ({
   defaultSettings,
   customize,
   setCustomize,
+  defaultMaxHeight = 'unlimited',
+  defaultFontSize = 13,
 }) => {
   const [currentTheme, setCurrentTheme] = useState('lite');
   const cycleTheme = () => {
@@ -25,6 +27,8 @@ const useTableState = ({
   const [hiddenColumns, setHiddenColumns] = useState(new Set());
   const [pinnedAnchor, setPinnedAnchor] = useState(null);
   const [showRowNumbers, setShowRowNumbers] = useState(false);
+  const [tableMaxHeight, setTableMaxHeight] = useState(defaultMaxHeight);
+  const [fontSize, setFontSize] = useState(defaultFontSize);
   const [tableState, setTableState] = useState({ visibleHeaders: [], rows: [] });
 
   const defaultSettingsObj = useMemo(() => {
@@ -116,8 +120,10 @@ const useTableState = ({
         showFilterRow,
         pinnedAnchor,
         showRowNumbers,
-        customize,
-      }),
+      customize,
+      tableMaxHeight,
+      fontSize,
+    }),
     [
       currentTheme,
       columnStyles,
@@ -130,6 +136,8 @@ const useTableState = ({
       pinnedAnchor,
       showRowNumbers,
       customize,
+      tableMaxHeight,
+      fontSize,
     ]
   );
 
@@ -162,6 +170,8 @@ const useTableState = ({
         if (typeof s.showRowNumbers === 'boolean') setShowRowNumbers(s.showRowNumbers);
         if (typeof s.customize === 'boolean') setCustomize(s.customize);
         if (typeof s.theme === 'string') setCurrentTheme(s.theme);
+        if (typeof s.tableMaxHeight === 'string') setTableMaxHeight(s.tableMaxHeight);
+        if (typeof s.fontSize === 'number') setFontSize(s.fontSize);
         if (typeof s.editable === 'boolean' && typeof s.customize !== 'boolean')
           setCustomize(s.editable);
       } catch {
@@ -217,7 +227,7 @@ const useTableState = ({
 
   const resetSettings = () => {
     const initial = defaultSettingsObj
-      ? { ...defaultSettingsObj }
+      ? { tableMaxHeight: defaultMaxHeight, fontSize: defaultFontSize, ...defaultSettingsObj }
       : {
           columnStyles: {},
           columnOrder: originalHeaders,
@@ -230,6 +240,8 @@ const useTableState = ({
           showRowNumbers: false,
           theme: 'lite',
           customize: false,
+          tableMaxHeight: defaultMaxHeight,
+          fontSize: defaultFontSize,
         };
 
     if (typeof initial.customize !== 'boolean') initial.customize = false;
@@ -283,6 +295,10 @@ const useTableState = ({
     buildSettings,
     applySettings,
     resetSettings,
+    tableMaxHeight,
+    setTableMaxHeight,
+    fontSize,
+    setFontSize,
   };
 };
 

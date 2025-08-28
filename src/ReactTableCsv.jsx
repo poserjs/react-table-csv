@@ -16,6 +16,8 @@ const ReactTableCSV = ({
   defaultSettings = '',
   title,
   collapsed: collapsedProp = false,
+  maxHeight = 'unlimited',
+  fontSize: fontSizeProp = 13,
 }) => {
   const { originalHeaders, data, error } = useCsvData({ csvString, csvURL, csvData });
   const [customize, setCustomize] = useState(false);
@@ -30,6 +32,8 @@ const ReactTableCSV = ({
     defaultSettings,
     customize,
     setCustomize,
+    defaultMaxHeight: maxHeight,
+    defaultFontSize: fontSizeProp,
   });
 
   // When leaving customize mode, auto-hide the Settings panel for a clearer UX
@@ -151,7 +155,10 @@ const ReactTableCSV = ({
 
   if (!title) {
     return (
-      <div className={`${styles.root} ${styles[table.currentTheme] || styles.lite}`}>
+      <div
+        className={`${styles.root} ${styles[table.currentTheme] || styles.lite}`}
+        style={table.tableMaxHeight === 'unlimited' ? { minHeight: '100vh' } : undefined}
+      >
         <div className={styles.container}>
           <div className={styles.card}>{tableBody}</div>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hash, SunMoon, Type, Paintbrush, AlignLeft, AlignCenter, AlignRight, Columns, List, WrapText, Eye, EyeOff, Pin, PinOff, Scissors, X } from 'lucide-react';
+import { Hash, SunMoon, Type, Paintbrush, AlignLeft, AlignCenter, AlignRight, Columns, List, WrapText, Eye, EyeOff, Pin, PinOff, Scissors, X, Maximize } from 'lucide-react';
 import styles from '../ReactTableCsv.module.css';
 
 const SettingsPanel = ({
@@ -21,6 +21,10 @@ const SettingsPanel = ({
   buildSettings,
   applySettings,
   storageKey,
+  tableMaxHeight,
+  setTableMaxHeight,
+  fontSize,
+  setFontSize,
 }) => {
   const handleExportSettings = () => {
     try {
@@ -60,6 +64,54 @@ const SettingsPanel = ({
           <Hash size={16} />
           <span>Show row numbers</span>
         </label>
+        <div className={styles.widthGroup}>
+          <Maximize size={16} />
+          <span className={styles.muted}>Max height:</span>
+          <input
+            type="number"
+            placeholder="unlimited"
+            value={tableMaxHeight === 'unlimited' ? '' : parseInt(tableMaxHeight, 10) || ''}
+            onChange={(e) => {
+              const v = e.target.value;
+              const unit = tableMaxHeight === 'unlimited' ? 'px' : tableMaxHeight.endsWith('vh') ? 'vh' : 'px';
+              if (!v) setTableMaxHeight('unlimited');
+              else setTableMaxHeight(`${v}${unit}`);
+            }}
+            className={styles.widthInput}
+            disabled={tableMaxHeight === 'unlimited'}
+          />
+          <select
+            value={tableMaxHeight === 'unlimited' ? 'unlimited' : tableMaxHeight.endsWith('vh') ? 'vh' : 'px'}
+            onChange={(e) => {
+              const unit = e.target.value;
+              if (unit === 'unlimited') {
+                setTableMaxHeight('unlimited');
+              } else {
+                const num = tableMaxHeight === 'unlimited' ? 0 : parseInt(tableMaxHeight, 10) || 0;
+                setTableMaxHeight(`${num}${unit}`);
+              }
+            }}
+            className={styles.unitSelect}
+          >
+            <option value="unlimited">unlimited</option>
+            <option value="px">px</option>
+            <option value="vh">vh</option>
+          </select>
+        </div>
+        <div className={styles.widthGroup}>
+          <Type size={16} />
+          <span className={styles.muted}>Font:</span>
+          <input
+            type="number"
+            value={fontSize}
+            onChange={(e) => {
+              const v = parseInt(e.target.value, 10);
+              if (!Number.isNaN(v)) setFontSize(v);
+            }}
+            className={styles.widthInput}
+          />
+          <span className={styles.muted}>px</span>
+        </div>
         <div className={styles.reducerGroup}>
           <button className={styles.btn} onClick={handleExportSettings} title="Copy settings JSON to clipboard">Export settings</button>
           <button className={styles.btn} onClick={handleImportSettings} title="Paste settings JSON to import">Import settings</button>
