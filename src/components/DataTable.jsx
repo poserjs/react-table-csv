@@ -74,6 +74,8 @@ const DataTable = ({
   toggleColumnVisibility,
   pinnedAnchor,
   setPinnedAnchor,
+  tableMaxHeight,
+  fontSize,
   onDataProcessed,
 }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -82,6 +84,9 @@ const DataTable = ({
   const [pinnedOffsets, setPinnedOffsets] = useState({});
   const headerRefs = useRef({});
   const rowNumHeaderRef = useRef(null);
+  const wrapStyle = tableMaxHeight && tableMaxHeight !== 'unlimited'
+    ? { maxHeight: tableMaxHeight, overflowY: 'auto' }
+    : {};
 
   const visibleHeaders = useMemo(() => {
     return columnOrder.filter(header => !hiddenColumns.has(header));
@@ -588,7 +593,7 @@ const DataTable = ({
   return (
     <>
       {(!splitGroups || splitGroups.length === 0) ? (
-        <div className={styles.tableWrap}>
+        <div className={styles.tableWrap} style={wrapStyle}>
           <table className={styles.table} style={{ tableLayout: 'auto' }}>
             <thead>
               <tr className={styles.theadRow}>
@@ -815,7 +820,10 @@ const DataTable = ({
                   className={styles.row}
                 >
                   {showRowNumbers && (
-                    <td className={`${styles.cell} ${styles.stickyCell} ${styles.rowNoCell}`} style={{ left: 0, textAlign: 'right' }}>
+                    <td
+                      className={`${styles.cell} ${styles.stickyCell} ${styles.rowNoCell}`}
+                      style={{ left: 0, textAlign: 'right', fontSize: `${fontSize}px` }}
+                    >
                       {index + 1}
                     </td>
                   )}
@@ -823,10 +831,14 @@ const DataTable = ({
                     <td
                       key={`${index}-${header}`}
                       className={`${styles.cell} ${isPinnedHeader(header) ? styles.stickyCell : ''} ${isPinnedLast(header) ? styles.pinnedDivider : ''}`}
-                      style={isPinnedHeader(header) ? { ...getColumnStyle(header), left: `${pinnedOffsets[header] || 0}px` } : getColumnStyle(header)}
+                      style={isPinnedHeader(header)
+                        ? { ...getColumnStyle(header), fontSize: `${fontSize}px`, left: `${pinnedOffsets[header] || 0}px` }
+                        : { ...getColumnStyle(header), fontSize: `${fontSize}px` }}
                       title={columnStyles[header]?.noWrap ? row[header] : undefined}
                     >
-                      {formatNumberForDisplay(header, row[header])}
+                      <div className={styles.valueText} style={{ fontSize: `${fontSize}px` }}>
+                        {formatNumberForDisplay(header, row[header])}
+                      </div>
                     </td>
                   ))}
                 </tr>
@@ -849,7 +861,7 @@ const DataTable = ({
               <h2 className={styles.splitTitle}>
                 {splitByColumns.map((h, idx) => `${h}: ${g.keyVals[idx]}`).join(' • ')}
               </h2>
-              <div className={styles.tableWrap}>
+              <div className={styles.tableWrap} style={wrapStyle}>
                 <table className={styles.table} style={{ tableLayout: 'auto' }}>
                   <thead>
                     <tr className={styles.theadRow}>
@@ -1061,7 +1073,10 @@ const DataTable = ({
                     })().map((row, index) => (
                       <tr key={row._id || row._gid || index} className={styles.row}>
                         {showRowNumbers && (
-                          <td className={`${styles.cell} ${styles.stickyCell} ${styles.rowNoCell}`} style={{ left: 0, textAlign: 'right' }}>
+                          <td
+                            className={`${styles.cell} ${styles.stickyCell} ${styles.rowNoCell}`}
+                            style={{ left: 0, textAlign: 'right', fontSize: `${fontSize}px` }}
+                          >
                             {index + 1}
                           </td>
                         )}
@@ -1069,10 +1084,14 @@ const DataTable = ({
                           <td
                             key={`${index}-${header}`}
                             className={`${styles.cell} ${isPinnedHeader(header) ? styles.stickyCell : ''} ${isPinnedLast(header) ? styles.pinnedDivider : ''}`}
-                            style={isPinnedHeader(header) ? { ...getColumnStyle(header), left: `${pinnedOffsets[header] || 0}px` } : getColumnStyle(header)}
+                            style={isPinnedHeader(header)
+                              ? { ...getColumnStyle(header), fontSize: `${fontSize}px`, left: `${pinnedOffsets[header] || 0}px` }
+                              : { ...getColumnStyle(header), fontSize: `${fontSize}px` }}
                             title={columnStyles[header]?.noWrap ? row[header] : undefined}
                           >
-                            {formatNumberForDisplay(header, row[header])}
+                            <div className={styles.valueText} style={{ fontSize: `${fontSize}px` }}>
+                              {formatNumberForDisplay(header, row[header])}
+                            </div>
                           </td>
                         ))}
                       </tr>

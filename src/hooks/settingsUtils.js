@@ -12,6 +12,8 @@ export const buildSettings = ({
   pinnedAnchor,
   showRowNumbers,
   customize,
+  tableMaxHeight,
+  fontSize,
 }) => {
   const dropdown = {};
   if (dropdownFilters && typeof dropdownFilters === 'object') {
@@ -32,6 +34,8 @@ export const buildSettings = ({
     pinnedAnchor,
     showRowNumbers,
     customize,
+    tableMaxHeight,
+    fontSize,
   };
 };
 

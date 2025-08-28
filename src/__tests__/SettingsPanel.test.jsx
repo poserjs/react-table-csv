@@ -28,6 +28,10 @@ describe('SettingsPanel', () => {
         buildSettings={() => ({})}
         applySettings={noop}
         storageKey="test"
+        tableMaxHeight="unlimited"
+        setTableMaxHeight={noop}
+        fontSize={13}
+        setFontSize={noop}
       />
     );
 

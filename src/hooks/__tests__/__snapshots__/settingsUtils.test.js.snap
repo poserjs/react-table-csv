@@ -24,12 +24,14 @@ exports[`buildSettings builds settings from state 1`] = `
   "filters": {
     "col1": "foo",
   },
+  "fontSize": 14,
   "hiddenColumns": [
     "col2",
   ],
   "pinnedAnchor": "col1",
   "showFilterRow": true,
   "showRowNumbers": true,
+  "tableMaxHeight": "500px",
   "theme": "dark",
   "version": "0.1",
 }
