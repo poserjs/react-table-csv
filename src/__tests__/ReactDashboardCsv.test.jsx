@@ -95,15 +95,15 @@ describe('ReactDashboardCSV', () => {
     await screen.findByText('2', {}, { timeout: 2000 });
 
     // Enter customize -> settings -> change theme
-    fireEvent.click(screen.getByLabelText('Customize'));
+    fireEvent.click(screen.getByTitle('Toggle customize mode'));
     fireEvent.click(screen.getByText('Settings'));
     fireEvent.click(screen.getByText(/Theme:/)); // cycles to dark per theme order
 
     // Collapse
-    fireEvent.click(screen.getByText('Collapse'));
+    fireEvent.click(screen.getByTitle('Collapse'));
 
     // Expand
-    fireEvent.click(screen.getByText('Expand'));
+    fireEvent.click(screen.getByTitle('Expand'));
 
     // Still shows row text and the wrapper has class for the new theme
     await screen.findByText(/Showing\s+1\s+of\s+1\s+rows/, {}, { timeout: 2000 });
