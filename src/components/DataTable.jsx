@@ -82,6 +82,7 @@ const DataTable = ({
   const [draggedColumn, setDraggedColumn] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
   const [pinnedOffsets, setPinnedOffsets] = useState({});
+  const [headerHeight, setHeaderHeight] = useState(0);
   const headerRefs = useRef({});
   const rowNumHeaderRef = useRef(null);
   const wrapStyle = tableMaxHeight && tableMaxHeight !== 'unlimited'
@@ -549,6 +550,10 @@ const DataTable = ({
   }, [displayedRows, splitByColumns]);
 
   useLayoutEffect(() => {
+    const ref = showRowNumbers ? rowNumHeaderRef.current : headerRefs.current[visibleHeaders[0]];
+    if (ref) {
+      setHeaderHeight(ref.getBoundingClientRect().height);
+    }
     if (pinnedIndex < 0) {
       setPinnedOffsets({});
       return;
@@ -563,7 +568,7 @@ const DataTable = ({
       left += width;
     }
     setPinnedOffsets(offsets);
-  }, [visibleHeaders, columnStyles, pinnedIndex, data, showFilterRow, showRowNumbers]);
+  }, [visibleHeaders, columnStyles, pinnedIndex, data, showFilterRow, showRowNumbers, isCustomize, selectedColumn]);
 
   useEffect(() => {
     const onResize = () => {
@@ -579,10 +584,14 @@ const DataTable = ({
         }
         setPinnedOffsets(offsets);
       }
+      const ref = showRowNumbers ? rowNumHeaderRef.current : headerRefs.current[visibleHeaders[0]];
+      if (ref) {
+        setHeaderHeight(ref.getBoundingClientRect().height);
+      }
     };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, [visibleHeaders, pinnedIndex, showRowNumbers]);
+  }, [visibleHeaders, pinnedIndex, showRowNumbers, isCustomize]);
 
   useEffect(() => {
     if (onDataProcessed) {
@@ -724,10 +733,19 @@ const DataTable = ({
               {showFilterRow && (
                 <tr className={styles.filterRow}>
                   {showRowNumbers && (
-                    <th className={styles.filterCell} />
+                    <th
+                      className={`${styles.filterCell} ${styles.stickyFilter} ${styles.rowNoHead}`}
+                      style={{ left: 0, top: `${headerHeight}px` }}
+                    />
                   )}
                   {visibleHeaders.map(header => (
-                    <th key={`filter-${header}`} className={styles.filterCell}>
+                    <th
+                      key={`filter-${header}`}
+                      className={`${styles.filterCell} ${isPinnedHeader(header) ? styles.stickyFilter : ''} ${isPinnedLast(header) ? styles.pinnedDivider : ''}`}
+                      style={isPinnedHeader(header)
+                        ? { left: `${pinnedOffsets[header] || 0}px`, top: `${headerHeight}px` }
+                        : { top: `${headerHeight}px` }}
+                    >
                       <div className={styles.filterCellInner}>
                         <button
                           onClick={() => toggleFilterMode(header)}

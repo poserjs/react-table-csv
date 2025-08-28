@@ -220,8 +220,9 @@
 .rowNoHeadHidden { width: 0 !important; min-width: 0 !important; max-width: 0 !important; padding: 0 !important; border: none !important; }
 
 .filterRow { background: var(--filter-bg); border-bottom: 2px solid #cfe3ff; }
-.filterCell { position: relative; padding: 6px 10px; }
+.filterCell { position: sticky; padding: 6px 10px; background: var(--filter-bg); z-index: 3; }
 .filterCellInner { display: flex; align-items: center; gap: 6px; }
+.stickyFilter { left: 0; z-index: 4; }
 .iconBtn { padding: 6px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
 .iconBtnActive { background: var(--primary); color: #fff; border-color: transparent; }
 .flex1Relative { position: relative; flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }
