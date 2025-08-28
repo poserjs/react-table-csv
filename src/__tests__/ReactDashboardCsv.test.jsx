@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import '@testing-library/jest-dom';
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ReactDashboardCSV from '../ReactDashboardCsv';
 
 // Cap each test to 10 seconds max
@@ -71,12 +71,9 @@ describe('ReactDashboardCSV', () => {
     expect(await screen.findByText('States by Initial', {}, { timeout: 2000 })).toBeInTheDocument();
     expect(screen.getByText('Top Cities', { timeout: 2000 })).toBeInTheDocument();
 
-    // Row/column info from ReactTableCSV appears (1 row, 3 columns for capitals view)
-    await waitFor(() => {
-      expect(
-        screen.getAllByText(/Showing\s+1\s+of\s+1\s+rows/).length
-      ).toBeGreaterThanOrEqual(1);
-    }, { timeout: 2000 });
+    // Data from the rendered tables appears
+    await screen.findByText('Montgomery', {}, { timeout: 2000 });
+    await screen.findByText('Los Angeles', {}, { timeout: 2000 });
   });
 
   it('preserves theme across collapse/expand', async () => {
@@ -95,7 +92,7 @@ describe('ReactDashboardCSV', () => {
 
     // Wait for table to render
     await screen.findByText('Sample View', {}, { timeout: 2000 });
-    await screen.findByText(/Showing\s+1\s+of\s+1\s+rows/, {}, { timeout: 2000 });
+    await screen.findByText('2', {}, { timeout: 2000 });
 
     // Enter customize -> settings -> change theme
     fireEvent.click(screen.getByLabelText('Customize'));

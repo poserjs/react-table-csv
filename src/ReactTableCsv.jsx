@@ -123,18 +123,31 @@ const ReactTableCSV = ({
   }
   const tableBody = (
     <>
-      <Toolbar
-        {...table}
-        customize={customize}
-        setCustomize={setCustomize}
-        tableState={table.tableState}
-        dataCount={data.length}
-        headersCount={originalHeaders.length}
-        handleCopyUrl={handleCopyUrl}
-        handleCopyMarkdown={handleCopyMarkdown}
-        handleCopyCsv={handleCopyCsv}
-        handleDownload={handleDownload}
-      />
+      {!title && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+          <label className={styles.checkboxRow} title="Toggle customize mode">
+            <input
+              type="checkbox"
+              checked={customize}
+              onChange={(e) => setCustomize(e.target.checked)}
+            />
+            <span>Customize</span>
+          </label>
+        </div>
+      )}
+
+      {customize && (
+        <Toolbar
+          {...table}
+          tableState={table.tableState}
+          dataCount={data.length}
+          headersCount={originalHeaders.length}
+          handleCopyUrl={handleCopyUrl}
+          handleCopyMarkdown={handleCopyMarkdown}
+          handleCopyCsv={handleCopyCsv}
+          handleDownload={handleDownload}
+        />
+      )}
 
       <SettingsPanel
         {...table}
@@ -183,20 +196,30 @@ const ReactTableCSV = ({
         }}
       >
         <div style={{ fontWeight: 600 }}>{title}</div>
-        <button
-          onClick={() => setCollapsed((c) => !c)}
-          style={{
-            fontSize: 12,
-            padding: '4px 8px',
-            border: '1px solid var(--border)',
-            borderRadius: 4,
-            background: 'var(--surface)',
-            color: 'var(--btn-text)',
-            cursor: 'pointer',
-          }}
-        >
-          {collapsed ? 'Expand' : 'Collapse'}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label className={styles.checkboxRow} title="Toggle customize mode">
+            <input
+              type="checkbox"
+              checked={customize}
+              onChange={(e) => setCustomize(e.target.checked)}
+            />
+            <span>Customize</span>
+          </label>
+          <button
+            onClick={() => setCollapsed((c) => !c)}
+            style={{
+              fontSize: 12,
+              padding: '4px 8px',
+              border: '1px solid var(--border)',
+              borderRadius: 4,
+              background: 'var(--surface)',
+              color: 'var(--btn-text)',
+              cursor: 'pointer',
+            }}
+          >
+            {collapsed ? 'Expand' : 'Collapse'}
+          </button>
+        </div>
       </div>
       <div style={{ padding: 8, display: collapsed ? 'none' : 'block', maxWidth: '100%', minWidth: 0, overflowX: 'hidden' }}>
         <div className={styles.root} style={{ minHeight: 0 }}>
