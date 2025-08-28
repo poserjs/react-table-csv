@@ -190,9 +190,23 @@
 .theadRow .iconBtn:hover { background: rgba(255,255,255,0.12); }
 .theadRow .iconBtnActive { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.45); color: #fff; }
 
-.th { position: relative; text-align: left; padding: 8px 10px; font-weight: 600; border-bottom: 1px solid var(--border); user-select: none; }
+.th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+  background: var(--thead);
+  color: #fff;
+}
 .thDragOver { background: #374151; }
-.stickyHead { position: sticky; left: 0; z-index: 4; background: var(--thead); color: #fff; }
+.stickyHead {
+  left: 0;
+  z-index: 5;
+}
 .thInner { display: flex; flex-direction: column; align-items: stretch; }
 .headerTop { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 .headerRight { display: inline-flex; align-items: center; gap: 6px; }
