@@ -102,6 +102,7 @@ Notes
 - `title?: string` Optional title displayed in a themed header above the table.
 - `collapsed?: boolean` Render the table initially collapsed with a toggle in the header.
 - `maxHeight?: string` Limit table height (e.g., `'400px'`, `'50vh'`). Use `'unlimited'` for no limit.
+- `maxWidth?: string` Limit table width (e.g., `'400px'`, `'80%'`). Use `'unlimited'` for no limit.
 - `fontSize?: number` Font size for table values in pixels. Default `13`.
 - Theme selection is managed inside the component's settings. Use the Settings panel to cycle themes; the current theme is saved to `localStorage` and included when exporting settings.
 
@@ -114,7 +115,7 @@ Notes
   - Optional `title` shows above the table; optional `collapsed` renders the view initially collapsed with a toggle.
 
 ## Exported/Imported Settings (high‑level)
-- `{ version, theme, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize, tableMaxHeight, fontSize }`
+- `{ version, theme, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize, tableMaxHeight, tableMaxWidth, fontSize }`
 
 ## Resetting Settings
 Call `resetSettings()` to revert the table to its initial configuration. The reset also turns off customize mode (or respects a `customize` value from provided defaults) and returns the applied settings object.

@@ -13,6 +13,7 @@ export const buildSettings = ({
   showRowNumbers,
   customize,
   tableMaxHeight,
+  tableMaxWidth,
   fontSize,
 }) => {
   const dropdown = {};
@@ -35,6 +36,7 @@ export const buildSettings = ({
     showRowNumbers,
     customize,
     tableMaxHeight,
+    tableMaxWidth,
     fontSize,
   };
 };

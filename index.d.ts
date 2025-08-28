@@ -9,6 +9,7 @@ export interface ReactTableCSVProps {
   defaultSettings?: string | null;
   title?: string;
   collapsed?: boolean;
+  maxWidth?: string;
   maxHeight?: string;
   fontSize?: number;
 }

@@ -32,6 +32,7 @@ exports[`buildSettings builds settings from state 1`] = `
   "showFilterRow": true,
   "showRowNumbers": true,
   "tableMaxHeight": "500px",
+  "tableMaxWidth": "75%",
   "theme": "dark",
   "version": "0.1",
 }
