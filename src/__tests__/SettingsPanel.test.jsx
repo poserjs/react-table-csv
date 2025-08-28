@@ -30,6 +30,8 @@ describe('SettingsPanel', () => {
         storageKey="test"
         tableMaxHeight="unlimited"
         setTableMaxHeight={noop}
+        tableMaxWidth="unlimited"
+        setTableMaxWidth={noop}
         fontSize={13}
         setFontSize={noop}
       />

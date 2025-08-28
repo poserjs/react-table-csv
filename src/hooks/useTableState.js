@@ -9,6 +9,7 @@ const useTableState = ({
   customize,
   setCustomize,
   defaultMaxHeight = 'unlimited',
+  defaultMaxWidth = 'unlimited',
   defaultFontSize = 13,
 }) => {
   const [currentTheme, setCurrentTheme] = useState('lite');
@@ -28,6 +29,7 @@ const useTableState = ({
   const [pinnedAnchor, setPinnedAnchor] = useState(null);
   const [showRowNumbers, setShowRowNumbers] = useState(false);
   const [tableMaxHeight, setTableMaxHeight] = useState(defaultMaxHeight);
+  const [tableMaxWidth, setTableMaxWidth] = useState(defaultMaxWidth);
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [tableState, setTableState] = useState({ visibleHeaders: [], rows: [] });
 
@@ -120,10 +122,11 @@ const useTableState = ({
         showFilterRow,
         pinnedAnchor,
         showRowNumbers,
-      customize,
-      tableMaxHeight,
-      fontSize,
-    }),
+        customize,
+        tableMaxHeight,
+        tableMaxWidth,
+        fontSize,
+      }),
     [
       currentTheme,
       columnStyles,
@@ -137,6 +140,7 @@ const useTableState = ({
       showRowNumbers,
       customize,
       tableMaxHeight,
+      tableMaxWidth,
       fontSize,
     ]
   );
@@ -171,6 +175,7 @@ const useTableState = ({
         if (typeof s.customize === 'boolean') setCustomize(s.customize);
         if (typeof s.theme === 'string') setCurrentTheme(s.theme);
         if (typeof s.tableMaxHeight === 'string') setTableMaxHeight(s.tableMaxHeight);
+        if (typeof s.tableMaxWidth === 'string') setTableMaxWidth(s.tableMaxWidth);
         if (typeof s.fontSize === 'number') setFontSize(s.fontSize);
         if (typeof s.editable === 'boolean' && typeof s.customize !== 'boolean')
           setCustomize(s.editable);
@@ -221,13 +226,14 @@ const useTableState = ({
     showRowNumbers,
     customize,
     currentTheme,
+    tableMaxWidth,
     storageKey,
     buildSettings,
   ]);
 
   const resetSettings = () => {
     const initial = defaultSettingsObj
-      ? { tableMaxHeight: defaultMaxHeight, fontSize: defaultFontSize, ...defaultSettingsObj }
+      ? { tableMaxHeight: defaultMaxHeight, tableMaxWidth: defaultMaxWidth, fontSize: defaultFontSize, ...defaultSettingsObj }
       : {
           columnStyles: {},
           columnOrder: originalHeaders,
@@ -241,6 +247,7 @@ const useTableState = ({
           theme: 'lite',
           customize: false,
           tableMaxHeight: defaultMaxHeight,
+          tableMaxWidth: defaultMaxWidth,
           fontSize: defaultFontSize,
         };
 
@@ -297,6 +304,8 @@ const useTableState = ({
     resetSettings,
     tableMaxHeight,
     setTableMaxHeight,
+    tableMaxWidth,
+    setTableMaxWidth,
     fontSize,
     setFontSize,
   };

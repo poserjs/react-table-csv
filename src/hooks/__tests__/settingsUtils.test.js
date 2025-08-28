@@ -16,6 +16,7 @@ describe('buildSettings', () => {
       showRowNumbers: true,
       customize: true,
       tableMaxHeight: '500px',
+      tableMaxWidth: '75%',
       fontSize: 14,
     };
     expect(buildSettings(state)).toMatchSnapshot();
@@ -35,6 +36,7 @@ describe('buildSettings', () => {
       showRowNumbers: false,
       customize: false,
       tableMaxHeight: 'unlimited',
+      tableMaxWidth: 'unlimited',
       fontSize: 13,
     };
     const result = buildSettings(state);

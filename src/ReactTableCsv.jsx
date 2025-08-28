@@ -18,6 +18,7 @@ const ReactTableCSV = ({
   title,
   collapsed: collapsedProp = false,
   maxHeight = 'unlimited',
+  maxWidth = 'unlimited',
   fontSize: fontSizeProp = 13,
 }) => {
   const { originalHeaders, data, error } = useCsvData({ csvString, csvURL, csvData });
@@ -34,6 +35,7 @@ const ReactTableCSV = ({
     customize,
     setCustomize,
     defaultMaxHeight: maxHeight,
+    defaultMaxWidth: maxWidth,
     defaultFontSize: fontSizeProp,
   });
 
@@ -177,7 +179,10 @@ const ReactTableCSV = ({
     return (
       <div
         className={`${styles.root} ${styles[table.currentTheme] || styles.lite}`}
-        style={table.tableMaxHeight === 'unlimited' ? { minHeight: '100vh' } : undefined}
+        style={{
+          ...(table.tableMaxHeight === 'unlimited' ? { minHeight: '100vh' } : {}),
+          ...(table.tableMaxWidth !== 'unlimited' ? { maxWidth: table.tableMaxWidth, margin: '0 auto' } : {}),
+        }}
       >
         <div className={styles.container}>
           <div className={styles.card}>{tableBody}</div>
@@ -189,7 +194,16 @@ const ReactTableCSV = ({
   return (
     <div
       className={styles[table.currentTheme] || styles.lite}
-      style={{ marginBottom: 16, border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', maxWidth: '100%', minWidth: 0, overflowX: 'hidden' }}
+      style={{
+        marginBottom: 16,
+        border: '1px solid var(--border)',
+        borderRadius: 6,
+        background: 'var(--surface)',
+        maxWidth: table.tableMaxWidth === 'unlimited' ? '100%' : table.tableMaxWidth,
+        minWidth: 0,
+        overflowX: 'hidden',
+        ...(table.tableMaxWidth !== 'unlimited' ? { marginLeft: 'auto', marginRight: 'auto' } : {}),
+      }}
     >
       <div
         style={{

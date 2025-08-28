@@ -23,6 +23,8 @@ const SettingsPanel = ({
   storageKey,
   tableMaxHeight,
   setTableMaxHeight,
+  tableMaxWidth,
+  setTableMaxWidth,
   fontSize,
   setFontSize,
 }) => {
@@ -96,6 +98,40 @@ const SettingsPanel = ({
             <option value="unlimited">unlimited</option>
             <option value="px">px</option>
             <option value="vh">vh</option>
+          </select>
+        </div>
+        <div className={styles.widthGroup}>
+          <Maximize size={16} />
+          <span className={styles.muted}>Max width:</span>
+          <input
+            type="number"
+            placeholder="unlimited"
+            value={tableMaxWidth === 'unlimited' ? '' : parseInt(tableMaxWidth, 10) || ''}
+            onChange={(e) => {
+              const v = e.target.value;
+              const unit = tableMaxWidth === 'unlimited' ? 'px' : tableMaxWidth.endsWith('%') ? '%' : 'px';
+              if (!v) setTableMaxWidth('unlimited');
+              else setTableMaxWidth(`${v}${unit}`);
+            }}
+            className={styles.widthInput}
+            disabled={tableMaxWidth === 'unlimited'}
+          />
+          <select
+            value={tableMaxWidth === 'unlimited' ? 'unlimited' : tableMaxWidth.endsWith('%') ? '%' : 'px'}
+            onChange={(e) => {
+              const unit = e.target.value;
+              if (unit === 'unlimited') {
+                setTableMaxWidth('unlimited');
+              } else {
+                const num = tableMaxWidth === 'unlimited' ? 0 : parseInt(tableMaxWidth, 10) || 0;
+                setTableMaxWidth(`${num}${unit}`);
+              }
+            }}
+            className={styles.unitSelect}
+          >
+            <option value="unlimited">unlimited</option>
+            <option value="px">px</option>
+            <option value="%">%</option>
           </select>
         </div>
         <div className={styles.widthGroup}>
