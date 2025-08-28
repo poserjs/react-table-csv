@@ -633,7 +633,7 @@ const DataTable = ({
                         <div className={styles.thLeft}>
                           {isCustomize && <GripVertical size={14} />}
                           <span
-                            onClick={isCustomize ? () => toggleHeaderSort(header) : undefined}
+                            onClick={(isCustomize || showFilterRow) ? () => toggleHeaderSort(header) : undefined}
                             title={(() => {
                               const hasGroup = groupByColumns.length > 0;
                               const isGrouped = groupByColumns.includes(header);
@@ -649,28 +649,28 @@ const DataTable = ({
                         </div>
                         <div className={styles.headerRight}>
                           {isCustomize && (
-                            <>
-                              <button
-                                className={`${styles.iconBtn} ${selectedColumn === header && showStylePanel ? styles.iconBtnActive : ''}`}
-                                title={selectedColumn === header && showStylePanel ? 'Close settings' : 'Customize this column'}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (selectedColumn === header && showStylePanel) {
-                                    setSelectedColumn('');
-                                    setShowStylePanel(false);
-                                  } else {
-                                    setSelectedColumn(header);
-                                    setShowStylePanel(true);
-                                  }
-                                }}
-                              >
-                                <SettingsIcon size={14} />
-                              </button>
-                              <div className={styles.sortIcons}>
-                                <ChevronUp size={12} className={isSortAsc(header) ? styles.sortActive : styles.sortInactive} />
-                                <ChevronDown size={12} className={isSortDesc(header) ? styles.sortActive : styles.sortInactive} style={{ marginTop: '-3px' }} />
-                              </div>
-                            </>
+                            <button
+                              className={`${styles.iconBtn} ${selectedColumn === header && showStylePanel ? styles.iconBtnActive : ''}`}
+                              title={selectedColumn === header && showStylePanel ? 'Close settings' : 'Customize this column'}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (selectedColumn === header && showStylePanel) {
+                                  setSelectedColumn('');
+                                  setShowStylePanel(false);
+                                } else {
+                                  setSelectedColumn(header);
+                                  setShowStylePanel(true);
+                                }
+                              }}
+                            >
+                              <SettingsIcon size={14} />
+                            </button>
+                          )}
+                          {(isCustomize || showFilterRow) && (
+                            <div className={styles.sortIcons}>
+                              <ChevronUp size={12} className={isSortAsc(header) ? styles.sortActive : styles.sortInactive} />
+                              <ChevronDown size={12} className={isSortDesc(header) ? styles.sortActive : styles.sortInactive} style={{ marginTop: '-3px' }} />
+                            </div>
                           )}
                         </div>
                       </div>

@@ -81,4 +81,26 @@ describe('ReactTableCSV', () => {
     fireEvent.click(screen.getByTitle('Expand'));
     expect(cell).toBeVisible();
   });
+
+  it('allows sorting when filters are visible without customize mode', () => {
+    const csvData = {
+      headers: ['id'],
+      data: [
+        { id: 2 },
+        { id: 1 },
+      ],
+    };
+
+    render(<ReactTableCSV csvData={csvData} />);
+
+    fireEvent.click(screen.getByTitle('Show Filters'));
+
+    const rowsBefore = screen.getAllByRole('row');
+    expect(rowsBefore[2]).toHaveTextContent('2');
+
+    fireEvent.click(screen.getByText('id'));
+
+    const rowsAfter = screen.getAllByRole('row');
+    expect(rowsAfter[2]).toHaveTextContent('1');
+  });
 });
