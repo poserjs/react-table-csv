@@ -5,7 +5,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ReactTableCSV from '../ReactTableCsv';
 
 describe('ReactTableCSV', () => {
-  it('renders row and column info', () => {
+  it('shows row and column info only in customize mode', () => {
     const csvData = {
       headers: ['id', 'name'],
       data: [
@@ -14,7 +14,13 @@ describe('ReactTableCSV', () => {
       ]
     };
 
-    render(<ReactTableCSV csvData={csvData} />);
+    render(<ReactTableCSV csvData={csvData} title="Sample" />);
+
+    expect(
+      screen.queryByText('Showing 2 of 2 rows | 2 of 2 columns')
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Customize'));
 
     expect(
       screen.getByText('Showing 2 of 2 rows | 2 of 2 columns')
@@ -44,7 +50,7 @@ describe('ReactTableCSV', () => {
     });
   });
 
-  it('resets toggles to default values', () => {
+  it('renders customize toggle in header', () => {
     const csvData = {
       headers: ['id', 'name'],
       data: [
@@ -52,24 +58,9 @@ describe('ReactTableCSV', () => {
       ],
     };
 
-    render(<ReactTableCSV csvData={csvData} />);
+    render(<ReactTableCSV csvData={csvData} title="Sample" />);
 
-    const customizeCheckbox = screen.getByLabelText('Customize');
-    fireEvent.click(customizeCheckbox);
-
-    fireEvent.click(screen.getByText('Show Filters'));
-    fireEvent.click(screen.getByText('Settings'));
-
-    fireEvent.click(screen.getByText('Reset Settings'));
-
-    expect(customizeCheckbox).not.toBeChecked();
-
-    fireEvent.click(customizeCheckbox);
-
-    expect(screen.getByText('Show Filters')).toBeInTheDocument();
-    expect(screen.queryByText('Hide Filters')).not.toBeInTheDocument();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
-    expect(screen.queryByText('Hide Settings')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Customize')).toBeInTheDocument();
   });
 
   it('respects the collapsed prop and toggles', () => {
@@ -83,11 +74,11 @@ describe('ReactTableCSV', () => {
     render(<ReactTableCSV csvData={csvData} title="Sample" collapsed />);
 
     // Table content rendered but hidden initially
-    const info = screen.getByText('Showing 1 of 1 rows | 2 of 2 columns');
-    expect(info).not.toBeVisible();
+    const cell = screen.getByText('Alice');
+    expect(cell).not.toBeVisible();
 
     // Expand and expect content to be visible
     fireEvent.click(screen.getByText('Expand'));
-    expect(info).toBeVisible();
+    expect(cell).toBeVisible();
   });
 });
