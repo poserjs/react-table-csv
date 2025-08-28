@@ -1,10 +1,8 @@
 import React from 'react';
-import { Filter, X, Download, Copy, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
+import { X, Download, Copy, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
 import styles from '../ReactTableCsv.module.css';
 
 const Toolbar = ({
-  showFilterRow,
-  setShowFilterRow,
   clearAllFilters,
   showStylePanel,
   setShowStylePanel,
@@ -20,14 +18,6 @@ const Toolbar = ({
   return (
     <div className={styles.controls}>
       <div className={styles.controlsLeft}>
-        <button
-          onClick={() => setShowFilterRow(!showFilterRow)}
-          className={`${styles.btn} ${showFilterRow ? styles.btnPrimaryActive : ''}`}
-        >
-          <Filter size={18} />
-          {showFilterRow ? 'Hide Filters' : 'Show Filters'}
-        </button>
-
         <button onClick={clearAllFilters} className={styles.btn}>
           <X size={18} />
           Reset Filters

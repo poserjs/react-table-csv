@@ -6,6 +6,7 @@ import Toolbar from './components/Toolbar';
 import SettingsPanel from './components/SettingsPanel';
 import DataTable from './components/DataTable';
 import styles from './ReactTableCsv.module.css';
+import { Filter, Settings as SettingsIcon, Plus, Minus } from 'lucide-react';
 
 const ReactTableCSV = ({
   csvString,
@@ -124,15 +125,21 @@ const ReactTableCSV = ({
   const tableBody = (
     <>
       {!title && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-          <label className={styles.checkboxRow} title="Toggle customize mode">
-            <input
-              type="checkbox"
-              checked={customize}
-              onChange={(e) => setCustomize(e.target.checked)}
-            />
-            <span>Customize</span>
-          </label>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 8 }}>
+          <button
+            onClick={() => table.setShowFilterRow(!table.showFilterRow)}
+            className={`${styles.iconBtn} ${styles.headerBtn} ${table.showFilterRow ? styles.iconBtnActive : ''}`}
+            title={table.showFilterRow ? 'Hide Filters' : 'Show Filters'}
+          >
+            <Filter size={16} />
+          </button>
+          <button
+            onClick={() => setCustomize((c) => !c)}
+            className={`${styles.iconBtn} ${styles.headerBtn} ${customize ? styles.iconBtnActive : ''}`}
+            title="Toggle customize mode"
+          >
+            <SettingsIcon size={16} />
+          </button>
         </div>
       )}
 
@@ -197,27 +204,26 @@ const ReactTableCSV = ({
       >
         <div style={{ fontWeight: 600 }}>{title}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <label className={styles.checkboxRow} title="Toggle customize mode">
-            <input
-              type="checkbox"
-              checked={customize}
-              onChange={(e) => setCustomize(e.target.checked)}
-            />
-            <span>Customize</span>
-          </label>
+          <button
+            onClick={() => table.setShowFilterRow(!table.showFilterRow)}
+            className={`${styles.iconBtn} ${styles.headerBtn} ${table.showFilterRow ? styles.iconBtnActive : ''}`}
+            title={table.showFilterRow ? 'Hide Filters' : 'Show Filters'}
+          >
+            <Filter size={16} />
+          </button>
+          <button
+            onClick={() => setCustomize((c) => !c)}
+            className={`${styles.iconBtn} ${styles.headerBtn} ${customize ? styles.iconBtnActive : ''}`}
+            title="Toggle customize mode"
+          >
+            <SettingsIcon size={16} />
+          </button>
           <button
             onClick={() => setCollapsed((c) => !c)}
-            style={{
-              fontSize: 12,
-              padding: '4px 8px',
-              border: '1px solid var(--border)',
-              borderRadius: 4,
-              background: 'var(--surface)',
-              color: 'var(--btn-text)',
-              cursor: 'pointer',
-            }}
+            className={`${styles.iconBtn} ${styles.headerBtn}`}
+            title={collapsed ? 'Expand' : 'Collapse'}
           >
-            {collapsed ? 'Expand' : 'Collapse'}
+            {collapsed ? <Plus size={16} /> : <Minus size={16} />}
           </button>
         </div>
       </div>

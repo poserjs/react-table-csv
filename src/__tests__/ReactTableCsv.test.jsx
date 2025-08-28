@@ -20,7 +20,7 @@ describe('ReactTableCSV', () => {
       screen.queryByText('Showing 2 of 2 rows | 2 of 2 columns')
     ).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('Customize'));
+    fireEvent.click(screen.getByTitle('Toggle customize mode'));
 
     expect(
       screen.getByText('Showing 2 of 2 rows | 2 of 2 columns')
@@ -39,7 +39,7 @@ describe('ReactTableCSV', () => {
 
     render(<ReactTableCSV csvData={csvData} storageKey={storageKey} />);
 
-    fireEvent.click(screen.getByText('Customize'));
+    fireEvent.click(screen.getByTitle('Toggle customize mode'));
     fireEvent.click(screen.getByText('Settings'));
     fireEvent.click(screen.getByText(/Theme:/));
 
@@ -60,7 +60,7 @@ describe('ReactTableCSV', () => {
 
     render(<ReactTableCSV csvData={csvData} title="Sample" />);
 
-    expect(screen.getByLabelText('Customize')).toBeInTheDocument();
+    expect(screen.getByTitle('Toggle customize mode')).toBeInTheDocument();
   });
 
   it('respects the collapsed prop and toggles', () => {
@@ -78,7 +78,7 @@ describe('ReactTableCSV', () => {
     expect(cell).not.toBeVisible();
 
     // Expand and expect content to be visible
-    fireEvent.click(screen.getByText('Expand'));
+    fireEvent.click(screen.getByTitle('Expand'));
     expect(cell).toBeVisible();
   });
 });
