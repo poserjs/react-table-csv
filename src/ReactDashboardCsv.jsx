@@ -12,7 +12,7 @@ const errorToString = (e) => {
   }
 };
 
-const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb' }) => {
+const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb', layout }) => {
   const [results, setResults] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -239,39 +239,95 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb' }) => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div><pre>{error}</pre></div>;
 
+  // Prepare an ordered list of view entries
+  const viewEntries = Object.entries(views || {});
+
+  // Helper to chunk view entries according to layout counts
+  const buildRows = () => {
+    // Normalize layout: if not provided, or empty, default to [1, 1, ...]
+    if (!Array.isArray(layout) || layout.length === 0) {
+      return viewEntries.map((e) => [e]);
+    }
+    const rows = [];
+    let idx = 0;
+    for (let i = 0; i < layout.length && idx < viewEntries.length; i += 1) {
+      const raw = layout[i];
+      const count = Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 1;
+      const row = [];
+      for (let c = 0; c < count && idx < viewEntries.length; c += 1, idx += 1) {
+        row.push(viewEntries[idx]);
+      }
+      rows.push(row);
+    }
+    // Any remaining views are rendered 1 per row
+    while (idx < viewEntries.length) {
+      rows.push([viewEntries[idx]]);
+      idx += 1;
+    }
+    return rows;
+  };
+
+  const rows = buildRows();
+
   return (
-    <div style={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
-      {Object.entries(views || {}).map(([vid, v]) => {
-        const mergedProps = { ...(v.props || {}) };
-        if (!mergedProps.storageKey) mergedProps.storageKey = `react-table-csv-${vid}`;
-        // When db is 'none', pass through the underlying dataset directly to ReactTableCSV
-        let passthroughProps = {};
-        if (db === 'none') {
-          const datasetKeys = Object.keys(datasets || {});
-          const dsName = v.dataset || (datasetKeys.length === 1 ? datasetKeys[0] : null);
-          const ds = dsName ? datasets[dsName] : null;
-          if (ds) {
-            if (ds.csvData) {
-              passthroughProps = { csvData: ds.csvData };
-            } else if (ds.csvString) {
-              passthroughProps = { csvString: ds.csvString };
-            } else if (ds.csvURL) {
-              passthroughProps = { csvURL: ds.csvURL };
-            }
-          }
-        }
-        return (
-          <div key={vid} style={{ width: '100%', maxWidth: '100%', minWidth: 0, overflowX: 'hidden' }}>
-            <ReactTableCSV
-              title={v?.title || vid}
-              collapsed={!!v?.collapsed}
-              {...(db === 'duckdb' ? { csvData: results[vid] || { headers: [], data: [] } } : {})}
-              {...passthroughProps}
-              {...mergedProps}
-            />
-          </div>
-        );
-      })}
+    <div style={{ display: 'inline-block' }}>
+      {rows.map((row, rowIndex) => (
+        <table key={`row-${rowIndex}`} style={{ borderCollapse: 'separate', borderSpacing: 12, marginBottom: 12 }}>
+          <tbody>
+            <tr>
+              {row.map(([vid, v]) => {
+                const mergedProps = { ...(v.props || {}) };
+                if (!mergedProps.storageKey) mergedProps.storageKey = `react-table-csv-${vid}`;
+                // When db is 'none', pass through the underlying dataset directly to ReactTableCSV
+                let passthroughProps = {};
+                if (db === 'none') {
+                  const datasetKeys = Object.keys(datasets || {});
+                  const dsName = v.dataset || (datasetKeys.length === 1 ? datasetKeys[0] : null);
+                  const ds = dsName ? datasets[dsName] : null;
+                  if (ds) {
+                    if (ds.csvData) {
+                      passthroughProps = { csvData: ds.csvData };
+                    } else if (ds.csvString) {
+                      passthroughProps = { csvString: ds.csvString };
+                    } else if (ds.csvURL) {
+                      passthroughProps = { csvURL: ds.csvURL };
+                    }
+                  }
+                }
+                const normalizeUnit = (val) => (typeof val === 'number' ? `${val}px` : val);
+                const extractMaxWidth = () => {
+                  if (mergedProps.maxWidth != null) return mergedProps.maxWidth;
+                  // Try to read from defaultSettings JSON if provided
+                  try {
+                    const ds = mergedProps.defaultSettings ? JSON.parse(mergedProps.defaultSettings) : null;
+                    if (ds && typeof ds.tableMaxWidth === 'string') return ds.tableMaxWidth;
+                  } catch {}
+                  return 'unlimited';
+                };
+                const rawMaxWidth = extractMaxWidth();
+                const viewMaxWidth = normalizeUnit(rawMaxWidth);
+                const isUnlimited = viewMaxWidth === 'unlimited' || viewMaxWidth === '100%' || viewMaxWidth === 'auto';
+                const cellInnerStyle = isUnlimited
+                  ? { minWidth: '320px', overflowX: 'hidden' }
+                  : { maxWidth: viewMaxWidth, minWidth: '320px', overflowX: 'hidden' };
+                return (
+                  <td key={`cell-${vid}`} style={{ verticalAlign: 'top', width: isUnlimited ? 'auto' : viewMaxWidth }}>
+                    <div style={cellInnerStyle}>
+                      <ReactTableCSV
+                        title={v?.title || vid}
+                        collapsed={!!v?.collapsed}
+                        {...(db === 'duckdb' ? { csvData: results[vid] || { headers: [], data: [] } } : {})}
+                        {...passthroughProps}
+                        {...mergedProps}
+                      />
+                    </div>
+                  </td>
+                );
+              })}
+            </tr>
+          </tbody>
+        </table>
+      ))}
     </div>
   );
 };

@@ -99,10 +99,11 @@ const App: React.FC = () => {
         />
       </div>
 
-      <h2 style={{ marginTop: 24 }}>Dashboard NoSql Demo</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
+      <h2>Dashboard NoSql Demo</h2>
+      <div>
         <ReactDashboardCSV
           db="none"
+          layout={[2]}
           datasets={{
             capitals: { title: 'US State Capitals', csvURL: 'http://localhost:5173/us-state-capitals.csv' },
             cities: { title: 'US Top 1k Cities (multi-year)', csvURL: 'http://localhost:5173/us-cities-top-1k-multi-year.csv' },

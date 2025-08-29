@@ -39,11 +39,9 @@ const ReactTableCSV = ({
     defaultFontSize: fontSizeProp,
   });
 
-  // When leaving customize mode, auto-hide the Settings panel for a clearer UX
+  // Auto-sync Settings panel visibility with customize mode
   useEffect(() => {
-    if (!customize) {
-      try { table.setShowStylePanel(false); } catch { /* ignore */ }
-    }
+    try { table.setShowStylePanel(!!customize); } catch { /* ignore */ }
   }, [customize]);
 
   const buildCsv = () => {
@@ -162,6 +160,7 @@ const ReactTableCSV = ({
         {...table}
         visibleHeaders={table.tableState.visibleHeaders}
         originalHeaders={originalHeaders}
+        data={data}
         storageKey={storageKey}
       />
 
@@ -182,6 +181,7 @@ const ReactTableCSV = ({
         style={{
           ...(table.tableMaxHeight === 'unlimited' ? { minHeight: '100vh' } : {}),
           ...(table.tableMaxWidth !== 'unlimited' ? { maxWidth: table.tableMaxWidth, margin: '0 auto' } : {}),
+          minWidth: '320px',
         }}
       >
         <div className={styles.container}>
@@ -200,7 +200,7 @@ const ReactTableCSV = ({
         borderRadius: 6,
         background: 'var(--surface)',
         maxWidth: table.tableMaxWidth === 'unlimited' ? '100%' : table.tableMaxWidth,
-        minWidth: 0,
+        minWidth: '320px',
         overflowX: 'hidden',
         ...(table.tableMaxWidth !== 'unlimited' ? { marginLeft: 'auto', marginRight: 'auto' } : {}),
       }}
@@ -241,7 +241,7 @@ const ReactTableCSV = ({
           </button>
         </div>
       </div>
-      <div style={{ padding: 8, display: collapsed ? 'none' : 'block', maxWidth: '100%', minWidth: 0, overflowX: 'hidden' }}>
+      <div style={{ padding: 8, display: collapsed ? 'none' : 'block', maxWidth: '100%', minWidth: '320px', overflowX: 'hidden' }}>
         <div className={styles.root} style={{ minHeight: 0 }}>
           <div className={styles.container}>
             <div className={styles.card}>{tableBody}</div>

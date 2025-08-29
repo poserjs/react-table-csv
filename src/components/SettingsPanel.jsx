@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Hash, SunMoon, Type, Paintbrush, AlignLeft, AlignCenter, AlignRight, Columns, List, WrapText, Eye, EyeOff, Pin, PinOff, Scissors, X, Maximize } from 'lucide-react';
 import styles from '../ReactTableCsv.module.css';
 
@@ -16,6 +16,7 @@ const SettingsPanel = ({
   cycleTheme,
   currentTheme,
   originalHeaders,
+  data = [],
   showRowNumbers,
   setShowRowNumbers,
   buildSettings,
@@ -28,12 +29,18 @@ const SettingsPanel = ({
   fontSize,
   setFontSize,
 }) => {
+  const [showExport, setShowExport] = useState(false);
+  const [exportText, setExportText] = useState('');
+  const exportTextareaRef = useRef(null);
+
   const handleExportSettings = () => {
     try {
-      const json = JSON.stringify(buildSettings());
+      const json = JSON.stringify(buildSettings(), null, 2);
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(json).catch(() => {});
       }
+      setExportText(json);
+      setShowExport(true);
     } catch {
       /* ignore */
     }
@@ -53,8 +60,60 @@ const SettingsPanel = ({
 
   if (!showStylePanel) return null;
 
+  const inferTypeForColumn = (col) => {
+    if (!col) return 'text';
+    let hasAny = false;
+    let allStrings = true;
+    let allNumbers = true;
+    let allIntegers = true;
+    for (const row of data) {
+      const v = row[col];
+      if (v === '' || v == null) continue;
+      hasAny = true;
+      const t = typeof v;
+      if (t === 'string') {
+        allNumbers = false;
+      } else if (t === 'number') {
+        allStrings = false;
+        if (!Number.isFinite(v)) { allNumbers = false; allIntegers = false; }
+        else if (!Number.isInteger(v)) { allIntegers = false; }
+      } else if (t === 'bigint') {
+        allStrings = false;
+      } else {
+        allStrings = false;
+        allNumbers = false;
+        allIntegers = false;
+      }
+    }
+    if (!hasAny) return 'text';
+    if (allStrings) return 'text';
+    if (allNumbers && !allIntegers) return 'number';
+    if (allNumbers && allIntegers) return 'integer';
+    return 'text';
+  };
+
   return (
     <div className={styles.stylePanel}>
+      {showExport && (
+        <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-label="Export settings JSON">
+          <div className={styles.modal}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ fontWeight: 600 }}>Exported Settings</div>
+              <button className={styles.btn} onClick={() => setShowExport(false)}>Close</button>
+            </div>
+            <textarea
+              ref={exportTextareaRef}
+              className={styles.textarea}
+              readOnly
+              value={exportText}
+              onFocus={(e) => e.currentTarget.select()}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+              <button className={styles.btn} onClick={() => { try { exportTextareaRef.current?.select(); } catch {} }}>Select All</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className={styles.styleSection}>
         <label className={styles.label}>Table Options:</label>
         <label className={styles.checkboxRow}>
@@ -109,7 +168,10 @@ const SettingsPanel = ({
             value={tableMaxWidth === 'unlimited' ? '' : parseInt(tableMaxWidth, 10) || ''}
             onChange={(e) => {
               const v = e.target.value;
-              const unit = tableMaxWidth === 'unlimited' ? 'px' : tableMaxWidth.endsWith('%') ? '%' : 'px';
+              const unit = tableMaxWidth === 'unlimited'
+                ? 'px'
+                : (tableMaxWidth.endsWith('%') ? '%'
+                  : (tableMaxWidth.endsWith('vh') ? 'vh' : 'px'));
               if (!v) setTableMaxWidth('unlimited');
               else setTableMaxWidth(`${v}${unit}`);
             }}
@@ -117,7 +179,10 @@ const SettingsPanel = ({
             disabled={tableMaxWidth === 'unlimited'}
           />
           <select
-            value={tableMaxWidth === 'unlimited' ? 'unlimited' : tableMaxWidth.endsWith('%') ? '%' : 'px'}
+            value={tableMaxWidth === 'unlimited'
+              ? 'unlimited'
+              : (tableMaxWidth.endsWith('%') ? '%'
+                : (tableMaxWidth.endsWith('vh') ? 'vh' : 'px'))}
             onChange={(e) => {
               const unit = e.target.value;
               if (unit === 'unlimited') {
@@ -132,6 +197,7 @@ const SettingsPanel = ({
             <option value="unlimited">unlimited</option>
             <option value="px">px</option>
             <option value="%">%</option>
+            <option value="vh">vh</option>
           </select>
         </div>
         <div className={styles.widthGroup}>
@@ -388,7 +454,11 @@ const SettingsPanel = ({
                   <option value="auto">auto</option>
                   <option value="text">text</option>
                   <option value="number">number</option>
+                  <option value="integer">integer</option>
                 </select>
+                <span className={styles.muted} style={{ marginLeft: 8 }}>
+                  inferred: {inferTypeForColumn(selectedColumn)}
+                </span>
               </div>
               <div className={styles.reducerGroup}>
                 <label className={styles.smallLabel}>Number format:</label>
@@ -439,4 +509,3 @@ const SettingsPanel = ({
 };
 
 export default SettingsPanel;
-

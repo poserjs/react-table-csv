@@ -1,11 +1,9 @@
 import React from 'react';
-import { X, Download, Copy, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
+import { X, Download, Copy, RefreshCw } from 'lucide-react';
 import styles from '../ReactTableCsv.module.css';
 
 const Toolbar = ({
   clearAllFilters,
-  showStylePanel,
-  setShowStylePanel,
   resetSettings,
   handleCopyUrl,
   handleCopyMarkdown,
@@ -21,14 +19,6 @@ const Toolbar = ({
         <button onClick={clearAllFilters} className={styles.btn}>
           <X size={18} />
           Reset Filters
-        </button>
-
-        <button
-          onClick={() => setShowStylePanel(!showStylePanel)}
-          className={`${styles.btn} ${showStylePanel ? styles.btnAccentActive : ''}`}
-        >
-          <SettingsIcon size={18} />
-          {showStylePanel ? 'Hide Settings' : 'Settings'}
         </button>
 
         <button onClick={resetSettings} className={styles.btn} title="Reset all settings to defaults">
@@ -64,4 +54,3 @@ const Toolbar = ({
 };
 
 export default Toolbar;
-

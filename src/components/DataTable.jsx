@@ -83,6 +83,7 @@ const DataTable = ({
   const [dragOverColumn, setDragOverColumn] = useState(null);
   const [pinnedOffsets, setPinnedOffsets] = useState({});
   const [headerHeight, setHeaderHeight] = useState(0);
+  const [resizing, setResizing] = useState(null); // { col, startX, startWidth }
   const headerRefs = useRef({});
   const rowNumHeaderRef = useRef(null);
   const wrapStyle = tableMaxHeight && tableMaxHeight !== 'unlimited'
@@ -92,6 +93,48 @@ const DataTable = ({
   const visibleHeaders = useMemo(() => {
     return columnOrder.filter(header => !hiddenColumns.has(header));
   }, [columnOrder, hiddenColumns]);
+
+  // Infer column types when style type is 'auto'
+  const inferredTypeMap = useMemo(() => {
+    const map = {};
+    for (const h of originalHeaders) {
+      let hasAny = false;
+      let allStrings = true;
+      let allNumbers = true;
+      let allIntegers = true;
+      for (const row of data) {
+        const v = row[h];
+        if (v === '' || v === null || v === undefined) continue;
+        hasAny = true;
+        const t = typeof v;
+        if (t === 'string') {
+          allNumbers = false;
+        } else if (t === 'number') {
+          allStrings = false;
+          if (!Number.isFinite(v)) { allNumbers = false; allIntegers = false; }
+          else if (!Number.isInteger(v)) { allIntegers = false; }
+        } else if (t === 'bigint') {
+          allStrings = false;
+        } else {
+          allStrings = false;
+          allNumbers = false;
+          allIntegers = false;
+        }
+      }
+      if (!hasAny) {
+        map[h] = 'text';
+      } else if (allStrings) {
+        map[h] = 'text';
+      } else if (allNumbers && !allIntegers) {
+        map[h] = 'number';
+      } else if (allNumbers && allIntegers) {
+        map[h] = 'integer';
+      } else {
+        map[h] = 'text';
+      }
+    }
+    return map;
+  }, [data, originalHeaders]);
 
   const pinnedIndex = useMemo(() => {
     if (!pinnedAnchor) return -1;
@@ -109,12 +152,13 @@ const DataTable = ({
   };
 
   const handleDragStart = (e, header) => {
+    if (resizing) return; // ignore reorder while resizing
     setDraggedColumn(header);
     e.dataTransfer.effectAllowed = 'move';
   };
   const handleDragOver = (e, header) => {
     e.preventDefault();
-    if (draggedColumn && draggedColumn !== header) {
+    if (!resizing && draggedColumn && draggedColumn !== header) {
       setDragOverColumn(header);
     }
   };
@@ -136,6 +180,39 @@ const DataTable = ({
     setDraggedColumn(null);
     setDragOverColumn(null);
   };
+
+  // Column resizing handlers
+  const MIN_COL_PX = 60;
+  const startResize = (e, col) => {
+    try {
+      e.preventDefault();
+      e.stopPropagation();
+    } catch {}
+    const th = headerRefs.current[col];
+    const startWidth = th ? th.getBoundingClientRect().width : 0;
+    setResizing({ col, startX: e.clientX, startWidth });
+    // Visual cursor feedback
+    document.body.style.cursor = 'col-resize';
+  };
+  useEffect(() => {
+    if (!resizing) return;
+    const onMove = (e) => {
+      const dx = e.clientX - resizing.startX;
+      const next = Math.max(MIN_COL_PX, Math.round(resizing.startWidth + dx));
+      updateColumnStyle(resizing.col, 'width', `${next}px`);
+    };
+    const onUp = () => {
+      setResizing(null);
+      document.body.style.cursor = '';
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp, { once: true });
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
+    };
+  }, [resizing, updateColumnStyle]);
 
   const toggleHeaderSort = (col) => {
     const curr = columnStyles[col]?.sort || 'none';
@@ -172,12 +249,20 @@ const DataTable = ({
     }
   };
 
+  const effectiveType = (column) => {
+    const declared = columnStyles[column]?.type || 'auto';
+    if (declared && declared !== 'auto') return declared;
+    return inferredTypeMap[column] || 'text';
+  };
+
   const getColumnStyle = (column) => {
     const s = columnStyles[column] || {};
+    const type = effectiveType(column);
+    const defaultAlign = (type === 'number' || type === 'integer') ? 'right' : 'left';
     const style = {
       color: s.color || 'inherit',
       fontWeight: s.bold ? 'bold' : 'normal',
-      textAlign: s.align || 'left',
+      textAlign: s.align || defaultAlign,
       width: s.width || 'auto',
       minWidth: s.width || 'auto',
       maxWidth: s.width || 'none',
@@ -193,8 +278,10 @@ const DataTable = ({
 
   const getHeaderStyle = (column) => {
     const s = columnStyles[column] || {};
+    const type = effectiveType(column);
+    const defaultAlign = (type === 'number' || type === 'integer') ? 'right' : 'left';
     return {
-      textAlign: s.align || 'left',
+      textAlign: s.align || defaultAlign,
       width: s.width || 'auto',
       minWidth: s.width || 'auto',
       maxWidth: s.width || 'none',
@@ -205,10 +292,15 @@ const DataTable = ({
   };
 
   const formatNumberForDisplay = (header, value) => {
-    const fmt = columnStyles[header]?.numFormat || 'general';
     const declaredType = columnStyles[header]?.type || 'auto';
+    const type = effectiveType(header);
     const n = typeof value === 'number' ? value : parseFloat(value);
-    const isNumber = declaredType === 'number' || (!isNaN(n) && declaredType !== 'text');
+    const isNumber = (declaredType === 'number' || declaredType === 'integer') || (!isNaN(n) && declaredType !== 'text' && (type === 'number' || type === 'integer'));
+    // Default number formats if none specified
+    let fmt = columnStyles[header]?.numFormat || 'general';
+    if (fmt === 'general' && isNumber) {
+      fmt = type === 'integer' ? 'thousand' : 'thousand2';
+    }
     if (!isNumber) return value;
 
     const abs = Math.abs(n);
@@ -307,7 +399,8 @@ const DataTable = ({
         const r = row[key];
         const parsed = parseOp(value);
         const declaredType = columnStyles[key]?.type || 'auto';
-        const mode = declaredType === 'number' ? 'number' : (declaredType === 'text' ? 'text' : (typeof r === 'number' ? 'number' : 'text'));
+        const effType = declaredType === 'auto' ? (inferredTypeMap[key] || 'text') : declaredType;
+        const mode = (effType === 'number' || effType === 'integer') ? 'number' : 'text';
         if (!parsed) {
           return String(r ?? "").toLowerCase().includes(String(value).toLowerCase());
         }
@@ -320,7 +413,7 @@ const DataTable = ({
       });
       return passesText && passesDropdown;
     });
-  }, [data, filters, dropdownFilters, columnStyles]);
+  }, [data, filters, dropdownFilters, columnStyles, inferredTypeMap]);
 
   const groupByColumns = useMemo(() => {
     return originalHeaders.filter(h => columnStyles[h]?.groupBy);
@@ -621,7 +714,7 @@ const DataTable = ({
                     ref={(el) => { headerRefs.current[header] = el; }}
                     className={`${styles.th} ${dragOverColumn === header ? styles.thDragOver : ''} ${isPinnedHeader(header) ? styles.stickyHead : ''} ${isPinnedLast(header) ? styles.pinnedDivider : ''}`}
                     style={isPinnedHeader(header) ? { ...getHeaderStyle(header), left: `${pinnedOffsets[header] || 0}px` } : getHeaderStyle(header)}
-                    draggable={isCustomize}
+                    draggable={isCustomize && !resizing}
                     onDragStart={isCustomize ? (e) => handleDragStart(e, header) : undefined}
                     onDragOver={isCustomize ? (e) => handleDragOver(e, header) : undefined}
                     onDragLeave={isCustomize ? handleDragLeave : undefined}
@@ -724,6 +817,16 @@ const DataTable = ({
                             <EyeOff size={14} />
                           </button>
                         </div>
+                      )}
+                      {isCustomize && (
+                        <div
+                          className={styles.colResizer}
+                          onMouseDown={(e) => startResize(e, header)}
+                          onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                          role="separator"
+                          aria-orientation="vertical"
+                          aria-label={`Resize column ${header}`}
+                        />
                       )}
                     </div>
                   </th>
@@ -894,7 +997,7 @@ const DataTable = ({
                           ref={(el) => { headerRefs.current[header] = el; }}
                           className={`${styles.th} ${dragOverColumn === header ? styles.thDragOver : ''} ${isPinnedHeader(header) ? styles.stickyHead : ''} ${isPinnedLast(header) ? styles.pinnedDivider : ''}`}
                           style={isPinnedHeader(header) ? { ...getHeaderStyle(header), left: `${pinnedOffsets[header] || 0}px` } : getHeaderStyle(header)}
-                          draggable={isCustomize}
+                          draggable={isCustomize && !resizing}
                           onDragStart={isCustomize ? (e) => handleDragStart(e, header) : undefined}
                           onDragOver={isCustomize ? (e) => handleDragOver(e, header) : undefined}
                           onDragLeave={isCustomize ? handleDragLeave : undefined}
@@ -938,8 +1041,8 @@ const DataTable = ({
                                 )}
                               </div>
                             </div>
-                            {isCustomize && selectedColumn === header && (
-                              <div className={styles.headerBottom}>
+                      {isCustomize && selectedColumn === header && (
+                        <div className={styles.headerBottom}>
                                 <button
                                   className={`${styles.iconBtn} ${columnStyles[header]?.groupBy ? styles.iconBtnActive : ''}`}
                                   title={columnStyles[header]?.groupBy ? 'Ungroup by this column' : 'Group by this column'}
@@ -988,10 +1091,20 @@ const DataTable = ({
                                   <EyeOff size={14} />
                                 </button>
                               </div>
-                            )}
-                          </div>
-                        </th>
-                      ))}
+                      )}
+                      {isCustomize && (
+                        <div
+                          className={styles.colResizer}
+                          onMouseDown={(e) => startResize(e, header)}
+                          onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                          role="separator"
+                          aria-orientation="vertical"
+                          aria-label={`Resize column ${header}`}
+                        />
+                      )}
+                    </div>
+                  </th>
+                ))}
                     </tr>
                     {i === 0 && showFilterRow && (
                       <tr className={styles.filterRow}>

@@ -33,6 +33,13 @@ export interface ReactDashboardCsvProps {
   }>;
   views?: Record<string, ReactDashboardCsvView>;
   db?: 'duckdb' | 'none';
+  /**
+   * Layout rows as counts of tables per HTML table row.
+   * Example: [2, 1, 3] -> first row has 2 tables, second row 1, third row 3.
+   * If omitted, defaults to 1 table per row. Extra views beyond the array
+   * are also rendered one per row.
+   */
+  layout?: number[];
 }
 
 export const ReactDashboardCSV: React.FC<ReactDashboardCsvProps>;
