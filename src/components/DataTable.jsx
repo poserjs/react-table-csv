@@ -187,7 +187,9 @@ const DataTable = ({
     try {
       e.preventDefault();
       e.stopPropagation();
-    } catch {}
+    } catch (err) {
+      // Some environments (tests, older browsers) may not support these methods
+    }
     const th = headerRefs.current[col];
     const startWidth = th ? th.getBoundingClientRect().width : 0;
     setResizing({ col, startX: e.clientX, startWidth });

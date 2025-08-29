@@ -40,7 +40,7 @@ describe('ReactTableCSV', () => {
     render(<ReactTableCSV csvData={csvData} storageKey={storageKey} />);
 
     fireEvent.click(screen.getByTitle('Toggle customize mode'));
-    fireEvent.click(screen.getByText('Settings'));
+    fireEvent.click(screen.getAllByTitle('Customize this column')[0]);
     fireEvent.click(screen.getByText(/Theme:/));
 
     await waitFor(() => {
@@ -98,7 +98,8 @@ describe('ReactTableCSV', () => {
     const rowsBefore = screen.getAllByRole('row');
     expect(rowsBefore[2]).toHaveTextContent('2');
 
-    fireEvent.click(screen.getByText('id'));
+    const idHeader = screen.getAllByText('id').find(el => el.tagName === 'SPAN');
+    fireEvent.click(idHeader);
 
     const rowsAfter = screen.getAllByRole('row');
     expect(rowsAfter[2]).toHaveTextContent('1');

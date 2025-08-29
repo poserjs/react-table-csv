@@ -37,12 +37,14 @@ const SettingsPanel = ({
     try {
       const json = JSON.stringify(buildSettings(), null, 2);
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(json).catch(() => {});
+        navigator.clipboard.writeText(json).catch(() => {
+          // Ignore clipboard errors (e.g., unsupported browser)
+        });
       }
       setExportText(json);
       setShowExport(true);
     } catch {
-      /* ignore */
+      // JSON.stringify may fail for circular structures
     }
   };
 
@@ -109,7 +111,18 @@ const SettingsPanel = ({
               onFocus={(e) => e.currentTarget.select()}
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
-              <button className={styles.btn} onClick={() => { try { exportTextareaRef.current?.select(); } catch {} }}>Select All</button>
+              <button
+                className={styles.btn}
+                onClick={() => {
+                  try {
+                    exportTextareaRef.current?.select();
+                  } catch (err) {
+                    // Ignore selection issues (e.g., sandboxed iframes)
+                  }
+                }}
+              >
+                Select All
+              </button>
             </div>
           </div>
         </div>
