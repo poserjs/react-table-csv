@@ -96,7 +96,7 @@ describe('ReactDashboardCSV', () => {
 
     // Enter customize -> settings -> change theme
     fireEvent.click(screen.getByTitle('Toggle customize mode'));
-    fireEvent.click(screen.getByText('Settings'));
+    fireEvent.click(screen.getAllByTitle('Customize this column')[0]);
     fireEvent.click(screen.getByText(/Theme:/)); // cycles to dark per theme order
 
     // Collapse

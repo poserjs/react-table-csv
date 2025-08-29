@@ -301,7 +301,9 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb', layout })
                   try {
                     const ds = mergedProps.defaultSettings ? JSON.parse(mergedProps.defaultSettings) : null;
                     if (ds && typeof ds.tableMaxWidth === 'string') return ds.tableMaxWidth;
-                  } catch {}
+                  } catch (err) {
+                    /* ignore parse errors */
+                  }
                   return 'unlimited';
                 };
                 const rawMaxWidth = extractMaxWidth();
