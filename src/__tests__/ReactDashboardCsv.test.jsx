@@ -22,6 +22,10 @@ jest.mock('@duckdb/duckdb-wasm', () => {
       if (/^\s*CREATE\s+TABLE/i.test(sql)) {
         return { toArray: () => [] };
       }
+      // Swallow ATTACH statements
+      if (/^\s*ATTACH/i.test(sql)) {
+        return { toArray: () => [] };
+      }
       // Return predictable rows for SELECT in tests
       if (/FROM\s+capitals/i.test(sql)) {
         return {
@@ -38,6 +42,13 @@ jest.mock('@duckdb/duckdb-wasm', () => {
           toArray: () => [
             { A: 1, B: 2 },
             { A: 3, B: 4 },
+          ],
+        };
+      }
+      if (/FROM\s+stats\.numbers/i.test(sql)) {
+        return {
+          toArray: () => [
+            { A: 10, B: 20 },
           ],
         };
       }
@@ -147,5 +158,19 @@ describe('ReactDashboardCSV', () => {
 
     await screen.findByText('Nums', {}, { timeout: 2000 });
     await screen.findByText('4', {}, { timeout: 2000 });
+  });
+
+  it('runs queries against attached databases', async () => {
+    render(
+      <ReactDashboardCSV
+        dbs={{ stats: { dbURL: 'https://example.com/stats.duckdb' } }}
+        views={{
+          statsView: { title: 'Stats View', sql: 'SELECT A, B FROM stats.numbers' },
+        }}
+      />
+    );
+
+    await screen.findByText('Stats View', {}, { timeout: 2000 });
+    await screen.findByText('20', {}, { timeout: 2000 });
   });
 });

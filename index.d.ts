@@ -38,6 +38,10 @@ export interface ReactDashboardCsvProps {
       columns?: string[];
     };
   }>;
+  dbs?: Record<string, {
+    title?: string;
+    dbURL: string;             // remote URL to a DuckDB database file
+  }>;
   views?: Record<string, ReactDashboardCsvView>;
   db?: 'duckdb' | 'none';
   /**
