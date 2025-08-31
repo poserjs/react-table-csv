@@ -33,6 +33,14 @@ jest.mock('@duckdb/duckdb-wasm', () => {
           toArray: () => [{ State: 'CA', City: 'Los Angeles', Year: 2014, Population: 100 }],
         };
       }
+      if (/FROM\s+numbers/i.test(sql)) {
+        return {
+          toArray: () => [
+            { A: 1, B: 2 },
+            { A: 3, B: 4 },
+          ],
+        };
+      }
       // Fallback single row
       return { toArray: () => [{ A: 1, B: 2 }] };
     },
@@ -120,5 +128,24 @@ describe('ReactDashboardCSV', () => {
       node = node.parentElement;
     }
     expect(foundClass).toContain('dark');
+  });
+
+  it('respects CSV format options', async () => {
+    render(
+      <ReactDashboardCSV
+        datasets={{
+          numbers: {
+            csvString: '1|2\n3|4',
+            format: { type: 'csv', header: false, separator: '|', columns: ['A', 'B'] },
+          },
+        }}
+        views={{
+          nums: { title: 'Nums', sql: 'SELECT A, B FROM numbers' },
+        }}
+      />
+    );
+
+    await screen.findByText('Nums', {}, { timeout: 2000 });
+    await screen.findByText('4', {}, { timeout: 2000 });
   });
 });

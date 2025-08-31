@@ -105,39 +105,91 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb', layout })
           const name = key; // use dataset key as table name
           try {
             const srcUrl = meta?.csvURL;
-            const srcCsv = meta?.csvString;
-            const srcCsvData = meta?.csvData;
+            const srcText = meta?.csvString;
+            const srcData = meta?.csvData;
+            const format = meta?.format || {};
+            const fmtType = (format?.type || 'csv').toLowerCase();
 
-            if (!srcUrl && !srcCsv && !srcCsvData) {
+            if (!srcUrl && !srcText && !srcData) {
               // No source provided; skip silently
               continue;
             }
 
+            const escStr = (s) => s.replace(/'/g, "''");
+
+            const registerAndCreate = async (textSource) => {
+              if (!ddb.registerFileText) {
+                throw new Error('duckdb-wasm does not support registerFileText in this environment');
+              }
+              await ddb.registerFileText(name, textSource);
+              if (fmtType === 'json') {
+                await runQuery(`CREATE TABLE "${name}" AS SELECT * FROM read_json_auto('${name}')`);
+              } else {
+                const header = format.header !== undefined ? !!format.header : true;
+                const sep = escStr(format.separator || ',');
+                const quote = escStr(format.escape || '"');
+                const names = !header && Array.isArray(format.columns)
+                  ? `, names=[${format.columns.map((c) => `'${escStr(c)}'`).join(',')}]`
+                  : '';
+                await runQuery(
+                  `CREATE TABLE "${name}" AS SELECT * FROM read_csv('${name}', delim='${sep}', header=${header}${quote ? `, quote='${quote}'` : ''}${names})`
+                );
+              }
+            };
+
             if (srcUrl) {
               if (ddb.registerFileURL) {
                 await ddb.registerFileURL(name, srcUrl, duckdb.DuckDBDataProtocol.HTTP);
-                await runQuery(`CREATE TABLE "${name}" AS SELECT * FROM read_csv('${name}', delim=',', header=true)`);
+                if (fmtType === 'json') {
+                  await runQuery(`CREATE TABLE "${name}" AS SELECT * FROM read_json_auto('${name}')`);
+                } else {
+                  const header = format.header !== undefined ? !!format.header : true;
+                  const sep = escStr(format.separator || ',');
+                  const quote = escStr(format.escape || '"');
+                  const names = !header && Array.isArray(format.columns)
+                    ? `, names=[${format.columns.map((c) => `'${escStr(c)}'`).join(',')}]`
+                    : '';
+                  await runQuery(
+                    `CREATE TABLE "${name}" AS SELECT * FROM read_csv('${name}', delim='${sep}', header=${header}${quote ? `, quote='${quote}'` : ''}${names})`
+                  );
+                }
               } else {
-                await runQuery(`CREATE TABLE "${name}" AS FROM read_csv('${srcUrl}', DELIM=',', HEADER=TRUE)`);
+                if (fmtType === 'json') {
+                  await runQuery(`CREATE TABLE "${name}" AS FROM read_json_auto('${srcUrl}')`);
+                } else {
+                  const header = format.header !== undefined ? !!format.header : true;
+                  const sep = escStr(format.separator || ',');
+                  const quote = escStr(format.escape || '"');
+                  const names = !header && Array.isArray(format.columns)
+                    ? `, names=[${format.columns.map((c) => `'${escStr(c)}'`).join(',')}]`
+                    : '';
+                  await runQuery(
+                    `CREATE TABLE "${name}" AS FROM read_csv('${srcUrl}', delim='${sep}', header=${header}${quote ? `, quote='${quote}'` : ''}${names})`
+                  );
+                }
               }
               continue;
             }
 
-            // csv string or csvData path requires registering file text
-            if (!ddb.registerFileText) {
-              throw new Error('duckdb-wasm does not support registerFileText in this environment');
+            if (srcText) {
+              await registerAndCreate(srcText);
+              continue;
             }
 
-            let csvText = srcCsv;
-            if (!csvText && srcCsvData) {
-              try {
-                csvText = buildCsvText(srcCsvData);
-              } catch (err) {
-                throw new Error(`Failed to construct CSV text for dataset '${name}': ${errorToString(err)}`);
+            if (srcData) {
+              let text = '';
+              if (fmtType === 'json') {
+                text = JSON.stringify(srcData);
+              } else {
+                try {
+                  text = buildCsvText(srcData);
+                } catch (err) {
+                  throw new Error(`Failed to construct CSV text for dataset '${name}': ${errorToString(err)}`);
+                }
               }
+              await registerAndCreate(text);
+              continue;
             }
-            await ddb.registerFileText(name, csvText);
-            await runQuery(`CREATE TABLE "${name}" AS SELECT * FROM read_csv('${name}', delim=',', header=true)`);
           } catch (e) {
             setError(`Failed to create table '${name}': ${errorToString(e)}`);
           }
