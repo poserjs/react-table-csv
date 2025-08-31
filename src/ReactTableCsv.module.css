@@ -280,7 +280,7 @@
 .virtualSpacer td { padding: 0; border: none; height: inherit; }
 
 /* Dropdown */
-.dropdown { position: absolute; z-index: 50; margin-top: 4px; width: 256px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
+.dropdown { position: absolute; z-index: 50; top: calc(100% + 4px); left: 0; width: 256px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
 .dropdownHeader { padding: 8px; border-bottom: 1px solid var(--border); }
 .searchWrapper { position: relative; }
 .searchIcon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
