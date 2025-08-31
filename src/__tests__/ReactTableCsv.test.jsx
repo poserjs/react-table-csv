@@ -85,7 +85,7 @@ describe('ReactTableCSV', () => {
       ],
     };
 
-    render(<ReactTableCSV csvData={csvData} />);
+    const { container } = render(<ReactTableCSV csvData={csvData} />);
 
     fireEvent.click(screen.getByTitle('Show Filters'));
 
@@ -97,5 +97,8 @@ describe('ReactTableCSV', () => {
 
     const rowsAfter = screen.getAllByRole('row');
     expect(rowsAfter[2]).toHaveTextContent('1');
+
+    const ascIcon = container.querySelector('svg.lucide-arrow-up-0-1');
+    expect(ascIcon).toHaveClass('sortActive');
   });
 });
