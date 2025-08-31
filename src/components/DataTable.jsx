@@ -395,26 +395,35 @@ const DataTable = ({
         }
       }
     };
-    return data.filter(row => {
-      const passesText = Object.entries(filters).every(([key, value]) => {
-        if (!value) return true;
-        const r = row[key];
+
+    const textFns = Object.entries(filters)
+      .map(([key, value]) => {
+        if (!value) return null;
         const parsed = parseOp(value);
         const declaredType = columnStyles[key]?.type || 'auto';
         const effType = declaredType === 'auto' ? (inferredTypeMap[key] || 'text') : declaredType;
         const mode = (effType === 'number' || effType === 'integer') ? 'number' : 'text';
+        const lower = String(value).toLowerCase();
         if (!parsed) {
-          return String(r ?? "").toLowerCase().includes(String(value).toLowerCase());
+          return (row) => String(row[key] ?? '').toLowerCase().includes(lower);
         }
         const { op, rhs } = parsed;
-        return cmp(op, r, rhs, mode);
-      });
-      const passesDropdown = Object.entries(dropdownFilters).every(([key, selectedSet]) => {
-        if (!selectedSet || selectedSet.size === 0) return true;
-        return selectedSet.has(row[key]);
-      });
-      return passesText && passesDropdown;
-    });
+        return (row) => cmp(op, row[key], rhs, mode);
+      })
+      .filter(Boolean);
+
+    const dropdownFns = Object.entries(dropdownFilters)
+      .map(([key, selectedSet]) => {
+        if (!selectedSet || selectedSet.size === 0) return null;
+        return (row) => selectedSet.has(row[key]);
+      })
+      .filter(Boolean);
+
+    if (textFns.length === 0 && dropdownFns.length === 0) return data;
+
+    return data.filter((row) =>
+      textFns.every((fn) => fn(row)) && dropdownFns.every((fn) => fn(row))
+    );
   }, [data, filters, dropdownFilters, columnStyles, inferredTypeMap]);
 
   const groupByColumns = useMemo(() => {
