@@ -86,9 +86,15 @@ const DataTable = ({
   const [resizing, setResizing] = useState(null); // { col, startX, startWidth }
   const headerRefs = useRef({});
   const rowNumHeaderRef = useRef(null);
-  const wrapStyle = tableMaxHeight && tableMaxHeight !== 'unlimited'
-    ? { maxHeight: tableMaxHeight, overflowY: 'auto' }
-    : {};
+  const tableWrapRef = useRef(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(0);
+  const rowHeight = useMemo(() => Math.max(24, fontSize + 16), [fontSize]);
+  const overscan = 10;
+  const wrapStyle =
+    tableMaxHeight && tableMaxHeight !== 'unlimited'
+      ? { maxHeight: tableMaxHeight, overflowY: 'auto' }
+      : {};
 
   const visibleHeaders = useMemo(() => {
     return columnOrder.filter(header => !hiddenColumns.has(header));
@@ -634,6 +640,26 @@ const DataTable = ({
     [displayedRows, visibleHeaders, columnStyles]
   );
 
+  useLayoutEffect(() => {
+    const el = tableWrapRef.current;
+    if (el) {
+      setContainerHeight(el.clientHeight);
+    }
+  }, [sortedRows, tableMaxHeight]);
+
+  const handleScroll = (e) => {
+    setScrollTop(e.target.scrollTop);
+  };
+
+  const startIndex = Math.max(0, Math.floor(scrollTop / rowHeight) - overscan);
+  const endIndex = Math.min(
+    sortedRows.length,
+    Math.ceil((scrollTop + containerHeight) / rowHeight) + overscan
+  );
+  const visibleRowsSlice = sortedRows.slice(startIndex, endIndex);
+  const topPadding = startIndex * rowHeight;
+  const bottomPadding = (sortedRows.length - endIndex) * rowHeight;
+
   const splitByColumns = useMemo(() => {
     return originalHeaders.filter(h => columnStyles[h]?.splitBy);
   }, [originalHeaders, columnStyles]);
@@ -677,7 +703,9 @@ const DataTable = ({
   useEffect(() => {
     const onResize = () => {
       if (pinnedIndex >= 0) {
-        let left = showRowNumbers ? (rowNumHeaderRef.current ? rowNumHeaderRef.current.getBoundingClientRect().width : 0) : 0;
+        let left = showRowNumbers
+          ? (rowNumHeaderRef.current ? rowNumHeaderRef.current.getBoundingClientRect().width : 0)
+          : 0;
         const offsets = {};
         for (let i = 0; i <= pinnedIndex; i++) {
           const h = visibleHeaders[i];
@@ -691,6 +719,9 @@ const DataTable = ({
       const ref = showRowNumbers ? rowNumHeaderRef.current : headerRefs.current[visibleHeaders[0]];
       if (ref) {
         setHeaderHeight(ref.getBoundingClientRect().height);
+      }
+      if (tableWrapRef.current) {
+        setContainerHeight(tableWrapRef.current.clientHeight);
       }
     };
     window.addEventListener('resize', onResize);
@@ -706,7 +737,12 @@ const DataTable = ({
   return (
     <>
       {(!splitGroups || splitGroups.length === 0) ? (
-        <div className={styles.tableWrap} style={wrapStyle}>
+        <div
+          className={styles.tableWrap}
+          style={wrapStyle}
+          ref={tableWrapRef}
+          onScroll={handleScroll}
+        >
           <table className={styles.table} style={{ tableLayout: 'auto' }}>
             <thead>
               <tr className={styles.theadRow}>
@@ -946,35 +982,58 @@ const DataTable = ({
             </thead>
 
             <tbody>
-              {sortedRows.map((row, index) => (
-                <tr
-                  key={row._id || row._gid || index}
-                  className={styles.row}
-                >
-                  {showRowNumbers && (
-                    <td
-                      className={`${styles.cell} ${styles.stickyCell} ${styles.rowNoCell}`}
-                      style={{ left: 0, textAlign: 'right', fontSize: `${fontSize}px` }}
-                    >
-                      {index + 1}
-                    </td>
-                  )}
-                  {visibleHeaders.map(header => (
-                    <td
-                      key={`${index}-${header}`}
-                      className={`${styles.cell} ${isPinnedHeader(header) ? styles.stickyCell : ''} ${isPinnedLast(header) ? styles.pinnedDivider : ''}`}
-                      style={isPinnedHeader(header)
-                        ? { ...getColumnStyle(header), fontSize: `${fontSize}px`, left: `${pinnedOffsets[header] || 0}px` }
-                        : { ...getColumnStyle(header), fontSize: `${fontSize}px` }}
-                      title={columnStyles[header]?.noWrap ? row[header] : undefined}
-                    >
-                      <div className={styles.valueText} style={{ fontSize: `${fontSize}px` }}>
-                        {formatNumberForDisplay(header, row[header])}
-                      </div>
-                    </td>
-                  ))}
+              {topPadding > 0 && (
+                <tr className={styles.virtualSpacer}>
+                  <td
+                    colSpan={visibleHeaders.length + (showRowNumbers ? 1 : 0)}
+                    style={{ height: `${topPadding}px` }}
+                  />
                 </tr>
-              ))}
+              )}
+              {visibleRowsSlice.map((row, i) => {
+                const index = startIndex + i;
+                const alt = index % 2 === 1;
+                return (
+                  <tr
+                    key={row._id || row._gid || index}
+                    className={`${styles.row} ${alt ? styles.rowAlt : ''}`}
+                    style={{ height: `${rowHeight}px` }}
+                  >
+                    {showRowNumbers && (
+                      <td
+                        className={`${styles.cell} ${styles.stickyCell} ${styles.rowNoCell}`}
+                        style={{ left: 0, textAlign: 'right', fontSize: `${fontSize}px` }}
+                      >
+                        {index + 1}
+                      </td>
+                    )}
+                    {visibleHeaders.map((header) => (
+                      <td
+                        key={`${index}-${header}`}
+                        className={`${styles.cell} ${isPinnedHeader(header) ? styles.stickyCell : ''} ${isPinnedLast(header) ? styles.pinnedDivider : ''}`}
+                        style={
+                          isPinnedHeader(header)
+                            ? { ...getColumnStyle(header), fontSize: `${fontSize}px`, left: `${pinnedOffsets[header] || 0}px` }
+                            : { ...getColumnStyle(header), fontSize: `${fontSize}px` }
+                        }
+                        title={columnStyles[header]?.noWrap ? row[header] : undefined}
+                      >
+                        <div className={styles.valueText} style={{ fontSize: `${fontSize}px` }}>
+                          {formatNumberForDisplay(header, row[header])}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+              {bottomPadding > 0 && (
+                <tr className={styles.virtualSpacer}>
+                  <td
+                    colSpan={visibleHeaders.length + (showRowNumbers ? 1 : 0)}
+                    style={{ height: `${bottomPadding}px` }}
+                  />
+                </tr>
+              )}
             </tbody>
           </table>
 

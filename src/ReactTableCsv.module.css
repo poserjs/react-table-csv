@@ -266,6 +266,9 @@
 .stickyCell { position: sticky; left: 0; z-index: 3; background: var(--surface); }
 .row:nth-child(even) .stickyCell { background: var(--surface-alt); }
 
+.rowAlt { background: var(--surface-alt); }
+.rowAlt .stickyCell { background: var(--surface-alt); }
+
 /* Simple modal for export text */
 .modalOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; }
 .modal { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; width: min(840px, 96vw); max-height: 85vh; padding: 16px; box-shadow: 0 12px 28px rgba(0,0,0,0.3); }
@@ -273,6 +276,8 @@
 .row:hover .stickyCell { background: var(--row-hover); }
 .pinnedDivider { box-shadow: 6px 0 8px -4px rgba(0,0,0,0.12); border-right: 1px solid var(--border); }
 .rowNoCell { width: 56px; min-width: 56px; max-width: 56px; }
+
+.virtualSpacer td { padding: 0; border: none; height: inherit; }
 
 /* Dropdown */
 .dropdown { position: absolute; z-index: 50; margin-top: 4px; width: 256px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
