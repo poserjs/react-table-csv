@@ -62,8 +62,8 @@ export default function Page() {
     <ReactDashboardCSV
       db="duckdb" // or 'none'
       datasets={{
-        capitals: { title: "US State Capitals", csvURL: "/us-state-capitals.csv" },
-        cities:   { title: "US Cities (multi‑year)", csvURL: "/us-cities-top-1k-multi-year.csv" },
+        capitals: { title: "US State Capitals", csvURL: "/us-state-capitals.csv", format: { type: 'csv', header: true } },
+        cities:   { title: "US Cities (multi‑year)", csvURL: "/us-cities-top-1k-multi-year.csv", format: { type: 'csv', header: true } },
         // Or: raw CSV string
         // inlineData: { csvString: "col1,col2\nA,1\nB,2" },
         // Or: pre-parsed data (Papa.parse result or { headers, data })
@@ -107,8 +107,9 @@ Notes
 - Theme selection is managed inside the component's settings. Use the Settings panel to cycle themes; the current theme is saved to `localStorage` and included when exporting settings.
 
 ### ReactDashboardCSV Props
-- `datasets?: Record<string, { title?: string; csvURL?: string; csvString?: string; csvData?: any }>`
+- `datasets?: Record<string, { title?: string; csvURL?: string; csvString?: string; csvData?: any; format?: { type?: 'csv' | 'json'; header?: boolean; separator?: string; escape?: string; columns?: string[] } }>`
   - One of `csvURL`, `csvString`, or `csvData` must be set for each dataset.
+  - `format` defaults to CSV with `header: true`, `separator: ','`, and `escape: '"'`. When `header` is `false`, provide `columns` names.
 - `views?: Record<string, { title?: string; sql?: string; dataset?: string; props?: ReactTableCSVProps }>`
   - With `db="duckdb"` (default): each view runs its `sql` against the registered datasets and renders a table. If `sql` is omitted, the view shows `SELECT *` from the specified `dataset`, or from the only dataset if exactly one is provided.
   - With `db="none"`: DuckDB is not loaded. Each view must reference a `dataset` (or the only dataset is used) and the component passes that dataset directly to `ReactTableCSV` (via `csvURL`, `csvString`, or `csvData`). In this mode, omit `sql`.

@@ -30,6 +30,13 @@ export interface ReactDashboardCsvProps {
     csvURL?: string | null;     // remote URL to CSV
     csvString?: string | null;  // raw CSV string
     csvData?: unknown;          // pre-parsed object with {headers,data} or Papa result
+    format?: {
+      type?: 'csv' | 'json';
+      header?: boolean;
+      separator?: string;
+      escape?: string;
+      columns?: string[];
+    };
   }>;
   views?: Record<string, ReactDashboardCsvView>;
   db?: 'duckdb' | 'none';
