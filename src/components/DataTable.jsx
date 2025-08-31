@@ -1271,8 +1271,10 @@ const DataTable = ({
                     {(() => {
                       const rows = sortRows([...g.rows], visibleHeaders, columnStyles);
                       return rows;
-                    })().map((row, index) => (
-                      <tr key={row._id || row._gid || index} className={styles.row}>
+                    })().map((row, index) => {
+                      const alt = index % 2 === 1;
+                      return (
+                        <tr key={row._id || row._gid || index} className={`${styles.row} ${alt ? styles.rowAlt : ''}`}>
                         {showRowNumbers && (
                           <td
                             className={`${styles.cell} ${styles.stickyCell} ${styles.rowNoCell}`}
@@ -1295,8 +1297,9 @@ const DataTable = ({
                             </div>
                           </td>
                         ))}
-                      </tr>
-                    ))}
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

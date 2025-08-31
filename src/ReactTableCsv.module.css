@@ -260,11 +260,9 @@
 .textFilter { flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); color: var(--text); }
 
 .row { background: var(--surface); border-bottom: 1px solid var(--border); transition: background 0.2s ease; }
-.row:nth-child(even) { background: var(--surface-alt); }
 .row:hover { background: var(--row-hover); }
 .cell { padding: 6px 10px; font-size: 13px; line-height: 1.25; background: inherit; }
 .stickyCell { position: sticky; left: 0; z-index: 3; background: var(--surface); }
-.row:nth-child(even) .stickyCell { background: var(--surface-alt); }
 
 .rowAlt { background: var(--surface-alt); }
 .rowAlt .stickyCell { background: var(--surface-alt); }
