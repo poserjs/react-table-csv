@@ -9,9 +9,6 @@ const Toolbar = ({
   handleCopyMarkdown,
   handleCopyCsv,
   handleDownload,
-  tableState,
-  dataCount,
-  headersCount,
 }) => {
   return (
     <div className={styles.controls}>
@@ -44,10 +41,6 @@ const Toolbar = ({
           <Download size={18} />
           Download CSV
         </button>
-      </div>
-
-      <div className={styles.info}>
-        Showing {tableState.rows.length} of {dataCount} rows | {tableState.visibleHeaders.length} of {headersCount} columns
       </div>
     </div>
   );

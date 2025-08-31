@@ -124,31 +124,41 @@ const ReactTableCSV = ({
   }
   const tableBody = (
     <>
-      {!title && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 8 }}>
-          <button
-            onClick={() => table.setShowFilterRow(!table.showFilterRow)}
-            className={`${styles.iconBtn} ${styles.headerBtn} ${table.showFilterRow ? styles.iconBtnActive : ''}`}
-            title={table.showFilterRow ? 'Hide Filters' : 'Show Filters'}
+        {!title && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+              marginBottom: 8,
+            }}
           >
-            <Filter size={16} />
-          </button>
-          <button
-            onClick={() => setCustomize((c) => !c)}
-            className={`${styles.iconBtn} ${styles.headerBtn} ${customize ? styles.iconBtnActive : ''}`}
-            title="Toggle customize mode"
-          >
-            <SettingsIcon size={16} />
-          </button>
-        </div>
-      )}
+            <div className={styles.info}>
+              Showing {table.tableState.rows.length} of {data.length} rows | {table.tableState.visibleHeaders.length} of {originalHeaders.length} columns
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                onClick={() => table.setShowFilterRow(!table.showFilterRow)}
+                className={`${styles.iconBtn} ${styles.headerBtn} ${table.showFilterRow ? styles.iconBtnActive : ''}`}
+                title={table.showFilterRow ? 'Hide Filters' : 'Show Filters'}
+              >
+                <Filter size={16} />
+              </button>
+              <button
+                onClick={() => setCustomize((c) => !c)}
+                className={`${styles.iconBtn} ${styles.headerBtn} ${customize ? styles.iconBtnActive : ''}`}
+                title="Toggle customize mode"
+              >
+                <SettingsIcon size={16} />
+              </button>
+            </div>
+          </div>
+        )}
 
       {customize && (
         <Toolbar
           {...table}
-          tableState={table.tableState}
-          dataCount={data.length}
-          headersCount={originalHeaders.length}
           handleCopyUrl={handleCopyUrl}
           handleCopyMarkdown={handleCopyMarkdown}
           handleCopyCsv={handleCopyCsv}
@@ -205,42 +215,45 @@ const ReactTableCSV = ({
         ...(table.tableMaxWidth !== 'unlimited' ? { marginLeft: 'auto', marginRight: 'auto' } : {}),
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '8px 12px',
-          background: 'var(--control-bg)',
-          borderBottom: '1px solid var(--border)',
-          color: 'var(--text)',
-        }}
-      >
-        <div style={{ fontWeight: 600 }}>{title}</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button
-            onClick={() => table.setShowFilterRow(!table.showFilterRow)}
-            className={`${styles.iconBtn} ${styles.headerBtn} ${table.showFilterRow ? styles.iconBtnActive : ''}`}
-            title={table.showFilterRow ? 'Hide Filters' : 'Show Filters'}
-          >
-            <Filter size={16} />
-          </button>
-          <button
-            onClick={() => setCustomize((c) => !c)}
-            className={`${styles.iconBtn} ${styles.headerBtn} ${customize ? styles.iconBtnActive : ''}`}
-            title="Toggle customize mode"
-          >
-            <SettingsIcon size={16} />
-          </button>
-          <button
-            onClick={() => setCollapsed((c) => !c)}
-            className={`${styles.iconBtn} ${styles.headerBtn}`}
-            title={collapsed ? 'Expand' : 'Collapse'}
-          >
-            {collapsed ? <Plus size={16} /> : <Minus size={16} />}
-          </button>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 12px',
+            background: 'var(--control-bg)',
+            borderBottom: '1px solid var(--border)',
+            color: 'var(--text)',
+          }}
+        >
+          <div style={{ fontWeight: 600 }}>{title}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className={styles.info}>
+              Showing {table.tableState.rows.length} of {data.length} rows | {table.tableState.visibleHeaders.length} of {originalHeaders.length} columns
+            </div>
+            <button
+              onClick={() => table.setShowFilterRow(!table.showFilterRow)}
+              className={`${styles.iconBtn} ${styles.headerBtn} ${table.showFilterRow ? styles.iconBtnActive : ''}`}
+              title={table.showFilterRow ? 'Hide Filters' : 'Show Filters'}
+            >
+              <Filter size={16} />
+            </button>
+            <button
+              onClick={() => setCustomize((c) => !c)}
+              className={`${styles.iconBtn} ${styles.headerBtn} ${customize ? styles.iconBtnActive : ''}`}
+              title="Toggle customize mode"
+            >
+              <SettingsIcon size={16} />
+            </button>
+            <button
+              onClick={() => setCollapsed((c) => !c)}
+              className={`${styles.iconBtn} ${styles.headerBtn}`}
+              title={collapsed ? 'Expand' : 'Collapse'}
+            >
+              {collapsed ? <Plus size={16} /> : <Minus size={16} />}
+            </button>
+          </div>
         </div>
-      </div>
       <div style={{ padding: 8, display: collapsed ? 'none' : 'block', maxWidth: '100%', minWidth: '320px', overflowX: 'hidden' }}>
         <div className={styles.root} style={{ minHeight: 0 }}>
           <div className={styles.container}>

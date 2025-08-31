@@ -5,7 +5,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ReactTableCSV from '../ReactTableCsv';
 
 describe('ReactTableCSV', () => {
-  it('shows row and column info only in customize mode', () => {
+  it('displays row and column info in the header', () => {
     const csvData = {
       headers: ['id', 'name'],
       data: [
@@ -15,12 +15,6 @@ describe('ReactTableCSV', () => {
     };
 
     render(<ReactTableCSV csvData={csvData} title="Sample" />);
-
-    expect(
-      screen.queryByText('Showing 2 of 2 rows | 2 of 2 columns')
-    ).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByTitle('Toggle customize mode'));
 
     expect(
       screen.getByText('Showing 2 of 2 rows | 2 of 2 columns')
