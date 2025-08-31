@@ -12,7 +12,7 @@ const errorToString = (e) => {
   }
 };
 
-const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb', layout }) => {
+const ReactDashboardCsv = ({ datasets, dbs, views = {}, db = 'duckdb', layout }) => {
   const [results, setResults] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -99,6 +99,25 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb', layout })
           }
           return lines.join('\n');
         };
+
+        // Register external DuckDB database files and attach them
+        for (const [dbName, meta] of Object.entries(dbs || {})) {
+          const dbUrl = meta?.dbURL;
+          if (!dbUrl) continue;
+          const fileName = `${dbName}.duckdb`;
+          try {
+            if (ddb.registerFileURL) {
+              await ddb.registerFileURL(fileName, dbUrl, duckdb.DuckDBDataProtocol.HTTP);
+            } else if (ddb.registerFileBuffer) {
+              const resp = await fetch(dbUrl);
+              const buf = new Uint8Array(await resp.arrayBuffer());
+              await ddb.registerFileBuffer(fileName, buf);
+            }
+            await runQuery(`ATTACH '${fileName}' AS "${dbName}"`);
+          } catch (e) {
+            setError(`Failed to attach DB '${dbName}': ${errorToString(e)}`);
+          }
+        }
 
         // Register datasets and materialize as tables
         for (const [key, meta] of Object.entries(datasets || {})) {
@@ -286,7 +305,7 @@ const ReactDashboardCsv = ({ datasets = {}, views = {}, db = 'duckdb', layout })
     return () => {
       cancelled = true;
     };
-  }, [datasets, views, db]);
+  }, [datasets, dbs, views, db]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div><pre>{error}</pre></div>;

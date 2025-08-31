@@ -48,7 +48,7 @@ export default function Page() {
 ```
 
 ### Dashboard Mode (duckdb-wasm or none)
-Use `ReactDashboardCSV` to register one or more CSV datasets and define views that render as tables. Dataset keys become DuckDB table names.
+Use `ReactDashboardCSV` to register one or more CSV datasets and define views that render as tables. Dataset keys become DuckDB table names. Whole DuckDB database files can also be attached via the `dbs` prop and referenced in SQL using the provided keys as database names.
 
 Set `db` to `'duckdb'` (default) to enable SQL queries via `duckdb-wasm`, or `'none'` to render datasets directly without DuckDB.
 
@@ -61,6 +61,9 @@ export default function Page() {
   return (
     <ReactDashboardCSV
       db="duckdb" // or 'none'
+      dbs={{
+        stats: { dbURL: "/stats.duckdb" },
+      }}
       datasets={{
         capitals: { title: "US State Capitals", csvURL: "/us-state-capitals.csv", format: { type: 'csv', header: true } },
         cities:   { title: "US Cities (multi‑year)", csvURL: "/us-cities-top-1k-multi-year.csv", format: { type: 'csv', header: true } },
@@ -110,6 +113,8 @@ Notes
 - `datasets?: Record<string, { title?: string; csvURL?: string; csvString?: string; csvData?: any; format?: { type?: 'csv' | 'json'; header?: boolean; separator?: string; escape?: string; columns?: string[] } }>`
   - One of `csvURL`, `csvString`, or `csvData` must be set for each dataset.
   - `format` defaults to CSV with `header: true`, `separator: ','`, and `escape: '"'`. When `header` is `false`, provide `columns` names.
+- `dbs?: Record<string, { title?: string; dbURL: string }>`
+  - Attach external DuckDB database files by URL. The key becomes the database name for queries, e.g. `stats.my_table`.
 - `views?: Record<string, { title?: string; sql?: string; dataset?: string; props?: ReactTableCSVProps }>`
   - With `db="duckdb"` (default): each view runs its `sql` against the registered datasets and renders a table. If `sql` is omitted, the view shows `SELECT *` from the specified `dataset`, or from the only dataset if exactly one is provided.
   - With `db="none"`: DuckDB is not loaded. Each view must reference a `dataset` (or the only dataset is used) and the component passes that dataset directly to `ReactTableCSV` (via `csvURL`, `csvString`, or `csvData`). In this mode, omit `sql`.
