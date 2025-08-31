@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
 import {
+  ArrowDown01,
+  ArrowUp01,
   ChevronUp,
   ChevronDown,
   Filter,
@@ -224,7 +226,12 @@ const DataTable = ({
 
   const toggleHeaderSort = (col) => {
     const curr = columnStyles[col]?.sort || 'none';
-    const next = curr === 'none' ? 'up' : curr === 'up' ? 'down' : 'none';
+    const type = effectiveType(col);
+    const numeric = type === 'number' || type === 'integer';
+    let next;
+    if (curr === 'none') next = numeric ? 'up numbers' : 'up';
+    else if (curr === 'up' || curr === 'up numbers') next = numeric ? 'down numbers' : 'down';
+    else next = 'none';
     updateColumnStyle(col, 'sort', next);
   };
   const isSortAsc = (col) => {
@@ -297,6 +304,22 @@ const DataTable = ({
       overflow: s.noWrap ? 'hidden' : 'visible',
       textOverflow: s.noWrap ? 'ellipsis' : 'clip',
     };
+  };
+
+  const SortIcons = ({ header }) => {
+    const type = effectiveType(header);
+    const UpIcon = (type === 'number' || type === 'integer') ? ArrowUp01 : ChevronUp;
+    const DownIcon = (type === 'number' || type === 'integer') ? ArrowDown01 : ChevronDown;
+    return (
+      <div className={styles.sortIcons}>
+        <UpIcon size={12} className={isSortAsc(header) ? styles.sortActive : styles.sortInactive} />
+        <DownIcon
+          size={12}
+          className={isSortDesc(header) ? styles.sortActive : styles.sortInactive}
+          style={{ marginTop: '-3px' }}
+        />
+      </div>
+    );
   };
 
   const formatNumberForDisplay = (header, value) => {
@@ -807,10 +830,7 @@ const DataTable = ({
                             </button>
                           )}
                           {(isCustomize || showFilterRow) && (
-                            <div className={styles.sortIcons}>
-                              <ChevronUp size={12} className={isSortAsc(header) ? styles.sortActive : styles.sortInactive} />
-                              <ChevronDown size={12} className={isSortDesc(header) ? styles.sortActive : styles.sortInactive} style={{ marginTop: '-3px' }} />
-                            </div>
+                            <SortIcons header={header} />
                           )}
                         </div>
                       </div>
@@ -1103,10 +1123,7 @@ const DataTable = ({
                                     >
                                       <SettingsIcon size={14} />
                                     </button>
-                                    <div className={styles.sortIcons}>
-                                      <ChevronUp size={12} className={isSortAsc(header) ? styles.sortActive : styles.sortInactive} />
-                                      <ChevronDown size={12} className={isSortDesc(header) ? styles.sortActive : styles.sortInactive} style={{ marginTop: '-3px' }} />
-                                    </div>
+                                    <SortIcons header={header} />
                                   </>
                                 )}
                               </div>
