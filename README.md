@@ -121,7 +121,7 @@ Notes
   - Optional `title` shows above the table; optional `collapsed` renders the view initially collapsed with a toggle.
 
 ## Exported/Imported Settings (high‑level)
-- `{ version, theme, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, customize, tableMaxHeight, tableMaxWidth, fontSize }`
+- `{ version, theme, columnStyles, columnOrder, hiddenColumns, filters, dropdownFilters, filterMode, showFilterRow, pinnedAnchor, showRowNumbers, showTableInfo, customize, tableMaxHeight, tableMaxWidth, fontSize }`
 
 ## Resetting Settings
 Call `resetSettings()` to revert the table to its initial configuration. The reset also turns off customize mode (or respects a `customize` value from provided defaults) and returns the applied settings object.

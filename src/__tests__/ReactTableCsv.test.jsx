@@ -21,6 +21,21 @@ describe('ReactTableCSV', () => {
     ).toBeInTheDocument();
   });
 
+  it('hides row and column info when disabled', () => {
+    const csvData = {
+      headers: ['id', 'name'],
+      data: [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' }
+      ]
+    };
+
+    const defaultSettings = JSON.stringify({ showTableInfo: false });
+    render(<ReactTableCSV csvData={csvData} title="Sample" defaultSettings={defaultSettings} />);
+
+    expect(screen.queryByText(/Showing/)).toBeNull();
+  });
+
   it('saves theme changes to localStorage', async () => {
     const storageKey = 'theme-test';
     window.localStorage.removeItem(storageKey);

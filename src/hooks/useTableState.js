@@ -28,6 +28,7 @@ const useTableState = ({
   const [hiddenColumns, setHiddenColumns] = useState(new Set());
   const [pinnedAnchor, setPinnedAnchor] = useState(null);
   const [showRowNumbers, setShowRowNumbers] = useState(false);
+  const [showTableInfo, setShowTableInfo] = useState(true);
   const [tableMaxHeight, setTableMaxHeight] = useState(defaultMaxHeight);
   const [tableMaxWidth, setTableMaxWidth] = useState(defaultMaxWidth);
   const [fontSize, setFontSize] = useState(defaultFontSize);
@@ -122,6 +123,7 @@ const useTableState = ({
         showFilterRow,
         pinnedAnchor,
         showRowNumbers,
+        showTableInfo,
         customize,
         tableMaxHeight,
         tableMaxWidth,
@@ -138,6 +140,7 @@ const useTableState = ({
       showFilterRow,
       pinnedAnchor,
       showRowNumbers,
+      showTableInfo,
       customize,
       tableMaxHeight,
       tableMaxWidth,
@@ -172,6 +175,7 @@ const useTableState = ({
         if (typeof s.pinnedAnchor === 'string' || s.pinnedAnchor === null)
           setPinnedAnchor(s.pinnedAnchor);
         if (typeof s.showRowNumbers === 'boolean') setShowRowNumbers(s.showRowNumbers);
+        if (typeof s.showTableInfo === 'boolean') setShowTableInfo(s.showTableInfo);
         if (typeof s.customize === 'boolean') setCustomize(s.customize);
         if (typeof s.theme === 'string') setCurrentTheme(s.theme);
         if (typeof s.tableMaxHeight === 'string') setTableMaxHeight(s.tableMaxHeight);
@@ -224,6 +228,7 @@ const useTableState = ({
     showFilterRow,
     pinnedAnchor,
     showRowNumbers,
+    showTableInfo,
     customize,
     currentTheme,
     tableMaxWidth,
@@ -233,7 +238,7 @@ const useTableState = ({
 
   const resetSettings = () => {
     const initial = defaultSettingsObj
-      ? { tableMaxHeight: defaultMaxHeight, tableMaxWidth: defaultMaxWidth, fontSize: defaultFontSize, ...defaultSettingsObj }
+      ? { tableMaxHeight: defaultMaxHeight, tableMaxWidth: defaultMaxWidth, fontSize: defaultFontSize, showTableInfo: true, ...defaultSettingsObj }
       : {
           columnStyles: {},
           columnOrder: originalHeaders,
@@ -244,6 +249,7 @@ const useTableState = ({
           showFilterRow: false,
           pinnedAnchor: null,
           showRowNumbers: false,
+          showTableInfo: true,
           theme: 'lite',
           customize: false,
           tableMaxHeight: defaultMaxHeight,
@@ -252,6 +258,7 @@ const useTableState = ({
         };
 
     if (typeof initial.customize !== 'boolean') initial.customize = false;
+    if (typeof initial.showTableInfo !== 'boolean') initial.showTableInfo = true;
 
     applySettings(initial);
     setShowStylePanel(false);
@@ -292,6 +299,8 @@ const useTableState = ({
     setPinnedAnchor,
     showRowNumbers,
     setShowRowNumbers,
+    showTableInfo,
+    setShowTableInfo,
     currentTheme,
     cycleTheme,
     tableState,

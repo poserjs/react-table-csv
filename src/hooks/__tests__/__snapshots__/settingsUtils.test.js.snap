@@ -31,6 +31,7 @@ exports[`buildSettings builds settings from state 1`] = `
   "pinnedAnchor": "col1",
   "showFilterRow": true,
   "showRowNumbers": true,
+  "showTableInfo": true,
   "tableMaxHeight": "500px",
   "tableMaxWidth": "75%",
   "theme": "dark",

@@ -134,9 +134,11 @@ const ReactTableCSV = ({
               marginBottom: 8,
             }}
           >
-            <div className={styles.info}>
-              Showing {table.tableState.rows.length} of {data.length} rows | {table.tableState.visibleHeaders.length} of {originalHeaders.length} columns
-            </div>
+            {table.showTableInfo && (
+              <div className={styles.info}>
+                Showing {table.tableState.rows.length} of {data.length} rows | {table.tableState.visibleHeaders.length} of {originalHeaders.length} columns
+              </div>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <button
                 onClick={() => table.setShowFilterRow(!table.showFilterRow)}
@@ -228,9 +230,11 @@ const ReactTableCSV = ({
         >
           <div style={{ fontWeight: 600 }}>{title}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div className={styles.info}>
-              Showing {table.tableState.rows.length} of {data.length} rows | {table.tableState.visibleHeaders.length} of {originalHeaders.length} columns
-            </div>
+            {table.showTableInfo && (
+              <div className={styles.info}>
+                Showing {table.tableState.rows.length} of {data.length} rows | {table.tableState.visibleHeaders.length} of {originalHeaders.length} columns
+              </div>
+            )}
             <button
               onClick={() => table.setShowFilterRow(!table.showFilterRow)}
               className={`${styles.iconBtn} ${styles.headerBtn} ${table.showFilterRow ? styles.iconBtnActive : ''}`}
