@@ -25,6 +25,8 @@ describe('SettingsPanel', () => {
         originalHeaders={['id', 'name']}
         showRowNumbers={false}
         setShowRowNumbers={noop}
+        showTableInfo={true}
+        setShowTableInfo={noop}
         buildSettings={() => ({})}
         applySettings={noop}
         storageKey="test"

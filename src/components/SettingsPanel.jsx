@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Hash, SunMoon, Type, Paintbrush, AlignLeft, AlignCenter, AlignRight, Columns, List, WrapText, Eye, EyeOff, Pin, PinOff, Scissors, X, Maximize } from 'lucide-react';
+import { Hash, SunMoon, Type, Paintbrush, AlignLeft, AlignCenter, AlignRight, Columns, List, WrapText, Eye, EyeOff, Pin, PinOff, Scissors, X, Maximize, Info } from 'lucide-react';
 import styles from '../ReactTableCsv.module.css';
 
 const SettingsPanel = ({
@@ -19,6 +19,8 @@ const SettingsPanel = ({
   data = [],
   showRowNumbers,
   setShowRowNumbers,
+  showTableInfo,
+  setShowTableInfo,
   buildSettings,
   applySettings,
   storageKey,
@@ -137,6 +139,15 @@ const SettingsPanel = ({
           />
           <Hash size={16} />
           <span>Show row numbers</span>
+        </label>
+        <label className={styles.checkboxRow}>
+          <input
+            type="checkbox"
+            checked={showTableInfo}
+            onChange={(e) => setShowTableInfo(e.target.checked)}
+          />
+          <Info size={16} />
+          <span>Show table info</span>
         </label>
         <div className={styles.widthGroup}>
           <Maximize size={16} />
