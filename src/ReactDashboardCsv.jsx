@@ -368,9 +368,13 @@ const ReactDashboardCsv = ({ datasets, dbs, views = {}, db = 'duckdb', layout })
                 const normalizeUnit = (val) => (typeof val === 'number' ? `${val}px` : val);
                 const extractMaxWidth = () => {
                   if (mergedProps.maxWidth != null) return mergedProps.maxWidth;
-                  // Try to read from defaultSettings JSON if provided
+                  // Try to read from defaultSettings if provided (string or object)
                   try {
-                    const ds = mergedProps.defaultSettings ? JSON.parse(mergedProps.defaultSettings) : null;
+                    const ds = mergedProps.defaultSettings
+                      ? (typeof mergedProps.defaultSettings === 'string'
+                        ? JSON.parse(mergedProps.defaultSettings)
+                        : mergedProps.defaultSettings)
+                      : null;
                     if (ds && typeof ds.tableMaxWidth === 'string') return ds.tableMaxWidth;
                   } catch (err) {
                     /* ignore parse errors */

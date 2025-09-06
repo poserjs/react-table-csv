@@ -28,7 +28,7 @@ const App: React.FC = () => {
               collapsed: false,
               sql: `SELECT substr(t.state, 1, 1) AS Initial, t.state AS StateName, t.capital AS CapitalCity FROM capitals AS t ORDER BY 1 ASC, 2 ASC`,
               props: {
-                defaultSettings: JSON.stringify({
+                defaultSettings: {
                   version: '0.1',
                   theme: 'dark',
                   columnStyles: {
@@ -38,7 +38,7 @@ const App: React.FC = () => {
                   columnOrder: ['Initial', 'StateName', 'CapitalCity'],
                   filters: {},
                   showRowNumbers: true,
-                }),
+                },
                 downloadFilename: 'us-state-capitals-by-initial.csv',
               },
             },
@@ -47,7 +47,7 @@ const App: React.FC = () => {
               collapsed: true,
               sql: `SELECT t.state AS StateName, t.capital AS CapitalCity, length(t.capital) AS CapitalLength, substr(t.capital,1,1) AS CapitalInitial FROM capitals AS t WHERE t.state LIKE 'N%' ORDER BY 3 DESC, 2 ASC`,
               props: {
-                defaultSettings: JSON.stringify({
+                defaultSettings: {
                   version: '0.1',
                   theme: 'lite',
                   columnStyles: {
@@ -58,7 +58,7 @@ const App: React.FC = () => {
                   showFilterRow: true,
                   filters: { StateName: 'N' },
                   showRowNumbers: false,
-                }),
+                },
                 downloadFilename: 'n-states-capitals.csv',
               },
             },
@@ -67,7 +67,7 @@ const App: React.FC = () => {
               collapsed: false,
               sql: `SELECT c.State AS State, c.City AS City, c.year AS Year, c.Population AS Population FROM cities AS c WHERE c.year = 2014 ORDER BY c.Population DESC LIMIT 15`,
               props: {
-                defaultSettings: JSON.stringify({
+                defaultSettings: {
                   version: '0.1',
                   theme: 'lite',
                   columnStyles: {
@@ -77,7 +77,9 @@ const App: React.FC = () => {
                   columnOrder: ['State', 'City', 'Population', 'Year'],
                   showFilterRow: true,
                   showRowNumbers: true,
-                }),
+                  tableMaxHeight: '100vh',
+                  tableMaxWidth: '100vh',
+                },
                 downloadFilename: 'top-us-cities-2014.csv',
               },
             },
@@ -86,12 +88,14 @@ const App: React.FC = () => {
               collapsed: false,
               sql: `SELECT * FROM demographics AS d`,
               props: {
-                defaultSettings: JSON.stringify({
+                defaultSettings: {
                   version: '0.1',
                   theme: 'lite',
                   showFilterRow: true,
                   showRowNumbers: true,
-                }),
+                  tableMaxHeight: '100vh',
+                  tableMaxWidth: '100vh',
+                },
                 downloadFilename: 'us-cities-demographics-all.csv',
               },
             },
@@ -113,11 +117,91 @@ const App: React.FC = () => {
               title: 'All State Capitals',
               collapsed: false,
               dataset: 'capitals', // shows all rows/columns from this dataset
+              props: {
+                defaultSettings: {
+                  version: '0.1',
+                  theme: 'lite',
+                  showFilterRow: true,
+                  showRowNumbers: true,
+                  tableMaxHeight: '100vh',
+                  tableMaxWidth: '100vh',
+                },
+                downloadFilename: 'capitals.csv',
+              },
             },
             'cities-all': {
               title: 'All Cities',
               collapsed: false,
               dataset: 'cities',
+              props: {
+                defaultSettings: {
+                  version: '0.1',
+                  theme: 'lite',
+                  showFilterRow: true,
+                  showRowNumbers: true,
+                  tableMaxHeight: '100vh',
+                  tableMaxWidth: '100vh',
+                },
+                downloadFilename: 'cities-all.csv',
+              },
+            },
+          }}
+        />
+      </div>
+
+      <h2 style={{ marginTop: 24 }}>Dashboard DuckDB Attach Demo</h2>
+      <div>
+        <ReactDashboardCSV
+          db="duckdb"
+          layout={[2,1]}
+          dbs={{
+            cities: { dbURL: 'http://localhost:5173/cities.duckdb' },
+          }}
+          views={{
+            'from-db-capitals': {
+              title: 'DB: State Capitals',
+              sql: 'SELECT * FROM cities.capitals',
+              props: {
+                defaultSettings: {
+                  version: '0.1',
+                  theme: 'lite',
+                  showFilterRow: true,
+                  showRowNumbers: true,
+                  tableMaxHeight: '100vh',
+                  tableMaxWidth: '100vh',
+                },
+                downloadFilename: 'state-capitals.csv',
+              },
+            },
+            'from-db-cities': {
+              title: 'DB: Cities (multi-year)',
+              sql: 'SELECT * FROM cities.cities',
+              props: {
+                defaultSettings: {
+                  version: '0.1',
+                  theme: 'lite',
+                  showFilterRow: true,
+                  showRowNumbers: true,
+                  tableMaxHeight: '100vh',
+                  tableMaxWidth: '100vh',
+                },
+                downloadFilename: 'cities.csv',
+              },
+            },
+            'from-db-demographics': {
+              title: 'DB: Cities Demographics',
+              sql: 'SELECT * FROM cities.demographics',
+              props: {
+                defaultSettings: {
+                  version: '0.1',
+                  theme: 'lite',
+                  showFilterRow: true,
+                  showRowNumbers: true,
+                  tableMaxHeight: '100vh',
+                  tableMaxWidth: '100vh',
+                },
+                downloadFilename: 'cities-demographics.csv',
+              },
             },
           }}
         />

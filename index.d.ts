@@ -6,7 +6,7 @@ export interface ReactTableCSVProps {
   csvData?: unknown;
   downloadFilename?: string;
   storageKey?: string;
-  defaultSettings?: string | null;
+  defaultSettings?: string | Record<string, any> | null;
   title?: string;
   collapsed?: boolean;
   maxWidth?: string;

@@ -37,8 +37,14 @@ const useTableState = ({
   const defaultSettingsObj = useMemo(() => {
     try {
       if (!defaultSettings) return null;
-      const parsed = JSON.parse(defaultSettings);
-      return parsed && typeof parsed === 'object' ? parsed : null;
+      if (typeof defaultSettings === 'object') {
+        return defaultSettings;
+      }
+      if (typeof defaultSettings === 'string') {
+        const parsed = JSON.parse(defaultSettings);
+        return parsed && typeof parsed === 'object' ? parsed : null;
+      }
+      return null;
     } catch {
       return null;
     }
@@ -321,4 +327,3 @@ const useTableState = ({
 };
 
 export default useTableState;
-
