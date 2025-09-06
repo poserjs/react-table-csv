@@ -113,7 +113,7 @@ const ReactDashboardCsv = ({ datasets, dbs, views = {}, db = 'duckdb', layout })
               const buf = new Uint8Array(await resp.arrayBuffer());
               await ddb.registerFileBuffer(fileName, buf);
             }
-            await runQuery(`ATTACH '${fileName}' AS "${dbName}"`);
+            await runQuery(`ATTACH '${fileName}' AS "${dbName}" (READ_ONLY)`);
           } catch (e) {
             setError(`Failed to attach DB '${dbName}': ${errorToString(e)}`);
           }
