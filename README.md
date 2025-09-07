@@ -57,6 +57,30 @@ Set `db` to `'duckdb'` (default) to enable SQL queries via `duckdb-wasm`, or `'n
 
 Peer dependency: `@duckdb/duckdb-wasm` (installed by the app). The component handles multiple versions of the API.
 
+For multiple dashboards that should share a single DuckDB worker and attached databases, wrap them in `ReactDuckDBContainer` and pass the container via the `dbContainer` prop:
+
+```jsx
+import { ReactDuckDBContainer, useDuckDB, ReactDashboardCSV } from "@poserjs/react-table-csv";
+
+function Dashboards() {
+  const container = useDuckDB();
+  return (
+    <>
+      <ReactDashboardCSV dbContainer={container} views={{ /* ... */ }} />
+      <ReactDashboardCSV dbContainer={container} views={{ /* ... */ }} />
+    </>
+  );
+}
+
+export default function Page() {
+  return (
+    <ReactDuckDBContainer dbs={{ stats: { dbURL: "/stats.duckdb" } }}>
+      <Dashboards />
+    </ReactDuckDBContainer>
+  );
+}
+```
+
 ```jsx
 import { ReactDashboardCSV } from "@poserjs/react-table-csv";
 

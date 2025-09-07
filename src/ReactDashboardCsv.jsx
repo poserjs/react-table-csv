@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactTableCSV from './ReactTableCsv';
 import { normalizeParsed } from './utils/csv';
+import { useDuckDB } from './ReactDuckDBContainer';
 
 const errorToString = (e) => {
   try {
@@ -12,13 +13,16 @@ const errorToString = (e) => {
   }
 };
 
-const ReactDashboardCsv = ({ datasets, dbs, views = {}, db = 'duckdb', layout }) => {
+const ReactDashboardCsv = ({ datasets, dbs, dbContainer, views = {}, db = 'duckdb', layout }) => {
   const [results, setResults] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const contextContainer = useDuckDB();
 
   useEffect(() => {
     let cancelled = false;
+    let localWorker = null;
+    let localDdb = null;
     (async () => {
       setLoading(true);
       setError(null);
@@ -32,58 +36,90 @@ const ReactDashboardCsv = ({ datasets, dbs, views = {}, db = 'duckdb', layout })
           return;
         }
 
-        // Dynamically import duckdb-wasm
-        let duckdb;
-        try {
-          // @ts-ignore
-          duckdb = await import('@duckdb/duckdb-wasm');
-        } catch (e) {
-          setError(`duckdb-wasm not available: ${errorToString(e)}`);
-          setLoading(false);
-          return;
-        }
-
-        // Resolve bundle across versions
-        let bundle = null;
-        try {
-          const bundles = duckdb.getJsDelivrBundles?.() || duckdb.getBundledAssets?.();
-          bundle = duckdb.selectBundle ? await duckdb.selectBundle(bundles) : bundles;
-        } catch (e) {
-          setError(`Failed to select duckdb-wasm bundle: ${errorToString(e)}`);
-        }
-
-        // Create worker
-        let worker = null;
-        if (duckdb.createWorker) {
-          worker = await duckdb.createWorker(bundle?.mainWorker);
-        }
-
-        // Initialize DB supporting both modern and legacy APIs
         let ddb = null;
-        if (duckdb.create && worker) {
-          // Modern API
-          ddb = await duckdb.create(worker);
-        } else if (duckdb.AsyncDuckDB && worker) {
-          // Legacy API
-          const logger = duckdb.ConsoleLogger ? new duckdb.ConsoleLogger() : undefined;
-          ddb = new duckdb.AsyncDuckDB(logger, worker);
-          await ddb.instantiate?.(bundle?.mainModule, bundle?.pthreadWorker);
-        }
-
-        if (!ddb) {
-          setError('duckdb-wasm unsupported version');
-          setLoading(false);
+        let runQuery = null;
+        let duckdb;
+        const container = dbContainer || contextContainer;
+        if (container && container.ddb && container.runQuery) {
+          ({ ddb, runQuery } = container);
+          duckdb = container.duckdb;
+        } else if (dbContainer || contextContainer) {
+          // Container provided but not ready yet
+          setLoading(true);
           return;
-        }
+        } else {
+          // Dynamically import duckdb-wasm
+          try {
+            // @ts-ignore
+            duckdb = await import('@duckdb/duckdb-wasm');
+          } catch (e) {
+            setError(`duckdb-wasm not available: ${errorToString(e)}`);
+            setLoading(false);
+            return;
+          }
 
-        // Helper to run queries across versions
-        const runQuery = async (sql) => {
-          if (ddb.query) return ddb.query(sql);
-          const conn = await ddb.connect();
-          const res = await conn.query(sql);
-          await conn.close?.();
-          return res;
-        };
+          // Resolve bundle across versions
+          let bundle = null;
+          try {
+            const bundles = duckdb.getJsDelivrBundles?.() || duckdb.getBundledAssets?.();
+            bundle = duckdb.selectBundle ? await duckdb.selectBundle(bundles) : bundles;
+          } catch (e) {
+            setError(`Failed to select duckdb-wasm bundle: ${errorToString(e)}`);
+          }
+
+          // Create worker
+          let worker = null;
+          if (duckdb.createWorker) {
+            worker = await duckdb.createWorker(bundle?.mainWorker);
+          }
+
+          // Initialize DB supporting both modern and legacy APIs
+          if (duckdb.create && worker) {
+            // Modern API
+            ddb = await duckdb.create(worker);
+          } else if (duckdb.AsyncDuckDB && worker) {
+            // Legacy API
+            const logger = duckdb.ConsoleLogger ? new duckdb.ConsoleLogger() : undefined;
+            ddb = new duckdb.AsyncDuckDB(logger, worker);
+            await ddb.instantiate?.(bundle?.mainModule, bundle?.pthreadWorker);
+          }
+
+          if (!ddb) {
+            setError('duckdb-wasm unsupported version');
+            setLoading(false);
+            return;
+          }
+          localWorker = worker;
+          localDdb = ddb;
+
+          // Helper to run queries across versions
+          runQuery = async (sql) => {
+            if (ddb.query) return ddb.query(sql);
+            const conn = await ddb.connect();
+            const res = await conn.query(sql);
+            await conn.close?.();
+            return res;
+          };
+
+          // Register external DuckDB database files and attach them
+          for (const [dbName, meta] of Object.entries(dbs || {})) {
+            const dbUrl = meta?.dbURL;
+            if (!dbUrl) continue;
+            const fileName = `${dbName}.duckdb`;
+            try {
+              if (ddb.registerFileURL) {
+                await ddb.registerFileURL(fileName, dbUrl, duckdb.DuckDBDataProtocol.HTTP);
+              } else if (ddb.registerFileBuffer) {
+                const resp = await fetch(dbUrl);
+                const buf = new Uint8Array(await resp.arrayBuffer());
+                await ddb.registerFileBuffer(fileName, buf);
+              }
+              await runQuery(`ATTACH '${fileName}' AS "${dbName}" (READ_ONLY)`);
+            } catch (e) {
+              setError(`Failed to attach DB '${dbName}': ${errorToString(e)}`);
+            }
+          }
+        }
 
         // Helper: build CSV text from {headers, data}
         const buildCsvText = (obj) => {
@@ -99,25 +135,6 @@ const ReactDashboardCsv = ({ datasets, dbs, views = {}, db = 'duckdb', layout })
           }
           return lines.join('\n');
         };
-
-        // Register external DuckDB database files and attach them
-        for (const [dbName, meta] of Object.entries(dbs || {})) {
-          const dbUrl = meta?.dbURL;
-          if (!dbUrl) continue;
-          const fileName = `${dbName}.duckdb`;
-          try {
-            if (ddb.registerFileURL) {
-              await ddb.registerFileURL(fileName, dbUrl, duckdb.DuckDBDataProtocol.HTTP);
-            } else if (ddb.registerFileBuffer) {
-              const resp = await fetch(dbUrl);
-              const buf = new Uint8Array(await resp.arrayBuffer());
-              await ddb.registerFileBuffer(fileName, buf);
-            }
-            await runQuery(`ATTACH '${fileName}' AS "${dbName}" (READ_ONLY)`);
-          } catch (e) {
-            setError(`Failed to attach DB '${dbName}': ${errorToString(e)}`);
-          }
-        }
 
         // Register datasets and materialize as tables
         for (const [key, meta] of Object.entries(datasets || {})) {
@@ -304,8 +321,10 @@ const ReactDashboardCsv = ({ datasets, dbs, views = {}, db = 'duckdb', layout })
 
     return () => {
       cancelled = true;
+      localDdb?.terminate?.();
+      localWorker?.terminate?.();
     };
-  }, [datasets, dbs, views, db]);
+  }, [datasets, dbs, views, db, dbContainer, contextContainer]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div><pre>{error}</pre></div>;

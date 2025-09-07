@@ -43,6 +43,7 @@ export interface ReactDashboardCsvProps {
     dbURL: string;             // remote URL to a DuckDB database file
   }>;
   views?: Record<string, ReactDashboardCsvView>;
+  dbContainer?: DuckDBContainerState | null;
   db?: 'duckdb' | 'none';
   /**
    * Layout rows as counts of tables per HTML table row.
@@ -54,3 +55,14 @@ export interface ReactDashboardCsvProps {
 }
 
 export const ReactDashboardCSV: React.FC<ReactDashboardCsvProps>;
+
+export interface DuckDBContainerState {
+  ddb: any;
+  runQuery: (sql: string) => Promise<any>;
+  loading: boolean;
+  error: string | null;
+  duckdb: any;
+}
+
+export const ReactDuckDBContainer: React.FC<{ dbs?: Record<string, { title?: string; dbURL: string }>; db?: 'duckdb' | 'none'; children?: React.ReactNode }>; 
+export const useDuckDB: () => DuckDBContainerState;

@@ -33,3 +33,8 @@ npm run dev
 
 You can add additional shadcn components (e.g. `navigation-menu`, `sheet`, `separator`) as needed, or replace the local primitives with generated components from `shadcn/ui` when installing into a real project.
 
+
+## Demo data
+
+Run `python ../demo/bin/create_duckdb.py` to build the `cities.duckdb` database from CSVs. The script writes the file to `../demo/public/` and copies it into this folder's `public/` directory.
+
