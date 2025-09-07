@@ -3,6 +3,7 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ReactDashboardCSV from '../ReactDashboardCsv';
+import ReactDuckDBContainer, { useDuckDB } from '../ReactDuckDBContainer';
 
 // Cap each test to 10 seconds max
 jest.setTimeout(10000);
@@ -168,6 +169,29 @@ describe('ReactDashboardCSV', () => {
           statsView: { title: 'Stats View', sql: 'SELECT A, B FROM stats.numbers' },
         }}
       />
+    );
+
+    await screen.findByText('Stats View', {}, { timeout: 2000 });
+    await screen.findByText('20', {}, { timeout: 2000 });
+  });
+
+  it('uses a shared DuckDB container', async () => {
+    const Wrapper = () => {
+      const container = useDuckDB();
+      return (
+        <ReactDashboardCSV
+          dbContainer={container}
+          views={{
+            statsView: { title: 'Stats View', sql: 'SELECT A, B FROM stats.numbers' },
+          }}
+        />
+      );
+    };
+
+    render(
+      <ReactDuckDBContainer dbs={{ stats: { dbURL: 'https://example.com/stats.duckdb' } }}>
+        <Wrapper />
+      </ReactDuckDBContainer>
     );
 
     await screen.findByText('Stats View', {}, { timeout: 2000 });

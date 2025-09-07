@@ -29,3 +29,5 @@ dist
 coverage
 .DS_Store
 .npm-cache
+# DuckDB databases
+*.duckdb

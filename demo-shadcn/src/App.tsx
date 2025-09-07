@@ -5,7 +5,9 @@ import { ThemeToggle } from './components/theme-toggle'
 import Dash0 from './pages/Dash0'
 import Dash1 from '../../demo/src/Dash1'
 import Dash2 from '../../demo/src/Dash2'
-import Dash3 from '../../demo/src/Dash3'
+import Dash3 from './pages/Dash3'
+import Dash4 from './pages/Dash4'
+import { ReactDuckDBContainer, useDuckDB } from '@poserjs/react-table-csv'
 
 const useHashRoute = () => {
   const [route, setRoute] = React.useState<string>(() => window.location.hash || '#/dash0')
@@ -18,9 +20,10 @@ const useHashRoute = () => {
   return route.replace(/^#/, '')
 }
 
-const App: React.FC = () => {
+const AppInner: React.FC = () => {
   const route = useHashRoute()
   const [collapsed, setCollapsed] = React.useState(false)
+  const container = useDuckDB()
 
   const content = React.useMemo(() => {
     switch (route) {
@@ -29,12 +32,14 @@ const App: React.FC = () => {
       case '/dash2':
         return <Dash2 />
       case '/dash3':
-        return <Dash3 />
+        return <Dash3 dbContainer={container} />
+      case '/dash4':
+        return <Dash4 dbContainer={container} />
       case '/dash0':
       default:
         return <Dash0 />
     }
-  }, [route])
+  }, [route, container])
 
   const NavLink: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => {
     const active = '#'+route === href
@@ -57,7 +62,8 @@ const App: React.FC = () => {
             <NavLink href="#/dash0">Dash 0 · Local CSV/JSON</NavLink>
             <NavLink href="#/dash1">Dash 1 · Dashboard</NavLink>
             <NavLink href="#/dash2">Dash 2 · NoSQL</NavLink>
-            <NavLink href="#/dash3">Dash 3 · DuckDB Attach</NavLink>
+            <NavLink href="#/dash3">Dash 3 · DuckDB Page 1</NavLink>
+            <NavLink href="#/dash4">Dash 4 · DuckDB Page 2</NavLink>
           </nav>
         </aside>
       )}
@@ -89,4 +95,11 @@ const App: React.FC = () => {
   )
 }
 
+const App: React.FC = () => (
+  <ReactDuckDBContainer dbs={{ cities: { dbURL: 'http://localhost:5173/cities.duckdb' } }}>
+    <AppInner />
+  </ReactDuckDBContainer>
+)
+
 export default App
+

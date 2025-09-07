@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Create a DuckDB database at demo/public/cities.duckdb and load CSVs from demo/public.
+Also copies the generated database into demo-shadcn/public for the shadcn demo.
 
 Tables created:
 - capitals      <- us-state-capitals.csv
@@ -15,6 +16,7 @@ Requires:
 """
 from __future__ import annotations
 
+import shutil
 import sys
 from pathlib import Path
 
@@ -71,6 +73,14 @@ def main() -> int:
             print(f"  inserted {cnt} rows")
 
         print("Done.")
+        # Copy to shadcn demo so both demos share the same database
+        shadcn_public = demo_dir.parent / "demo-shadcn" / "public"
+        try:
+            shadcn_public.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(db_path, shadcn_public / db_path.name)
+            print(f"Copied to {shadcn_public / db_path.name}")
+        except Exception as e:  # pragma: no cover - optional
+            print(f"warning: could not copy to shadcn demo: {e}")
         return 0
     finally:
         con.close()
